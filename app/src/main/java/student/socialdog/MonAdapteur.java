@@ -15,16 +15,15 @@ import java.util.List;
 public class MonAdapteur extends RecyclerView.Adapter<MonAdapteur.MyViewHolder> {
 
     private final List<Pair<String, String>> characters = Arrays.asList(
-            Pair.create("Angela Merkel", "Chancellière d'Allemagne."),
-            Pair.create("Shinzo Abe", "Premier Ministre du Japon."),
-            Pair.create("Jair Bolsonaro", "Président du Brésil."),
-            Pair.create("Justin Trudeau", "Premier ministre du Canada."),
-            Pair.create("Boris Johnson", "Premier ministre du Royaume-Uni."),
-            Pair.create("Emmanuel Macron", "Président de la France et des français."),
-            Pair.create("Vladimir Poutine", "Président de la Russie."),
-            Pair.create("Xi Jinping", "Président de la république populaire de chine."),
-            Pair.create("Donald Trump", "Président \"POTUS\" des états-unis."),
-            Pair.create("Moon Jae-In", "Président de la Corée du Sud.")
+            Pair.create("Angela Merkel", "Actuellement en promenade"),
+            Pair.create("Shinzo Abe", "Actuellement en promenade"),
+            Pair.create("Jair Bolsonaro", "Dernière promenade il y a 3 heures."),
+            Pair.create("Justin Trudeau", "Dernière promenade il y a 6 heures."),
+            Pair.create("Boris Johnson", "Dernière promenade hier."),
+            Pair.create("Vladimir Poutine", "Dernière promenade il y a 2 jours."),
+            Pair.create("Xi Jinping", "Dernière promenade il y a 2 jours."),
+            Pair.create("Donald Trump", "Dernière promenade il y a 2 semaines."),
+            Pair.create("Jacques Chirac", "Dernière promenade il y a plus d'un mois.")
     );
 
     @Override
