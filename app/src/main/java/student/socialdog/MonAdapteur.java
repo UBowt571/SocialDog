@@ -1,78 +1,93 @@
 package student.socialdog;
 
 import android.app.AlertDialog;
+import android.media.Image;
+import android.text.Html;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MonAdapteur extends RecyclerView.Adapter<MonAdapteur.MyViewHolder> {
+public class MonAdapteur extends RecyclerView.Adapter<MonAdapteur.FriendViewHolder> {
 
-    private final List<Pair<String, String>> characters = Arrays.asList(
-            Pair.create("Angela Merkel", "Actuellement en promenade"),
-            Pair.create("Shinzo Abe", "Actuellement en promenade"),
-            Pair.create("Jair Bolsonaro", "Dernière promenade il y a 3 heures."),
-            Pair.create("Justin Trudeau", "Dernière promenade il y a 6 heures."),
-            Pair.create("Boris Johnson", "Dernière promenade hier."),
-            Pair.create("Vladimir Poutine", "Dernière promenade il y a 2 jours."),
-            Pair.create("Xi Jinping", "Dernière promenade il y a 2 jours."),
-            Pair.create("Donald Trump", "Dernière promenade il y a 2 semaines."),
-            Pair.create("Jacques Chirac", "Dernière promenade il y a plus d'un mois.")
-    );
+    public ArrayList<FriendsObject> friendslisted = MainFriendslist.friendslist;
+
+
 
     @Override
     public int getItemCount() {
-        return characters.size();
+        ArrayList<FriendsObject> friendslistedtest = MainFriendslist.friendslist;
+        return friendslistedtest.size();
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FriendViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.friendslist, parent, false);
-        return new MyViewHolder(view);
+        return new FriendViewHolder(view);
+
+
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
-        Pair<String, String> pair = characters.get(position);
-        holder.display(pair);
+    public void onBindViewHolder(FriendViewHolder holder, int position) {
+        FriendsObject friend = friendslisted.get(position);
+        holder.display(friend);
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class FriendViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView name;
-        private final TextView description;
+        private final TextView lastWalk;
+        private final ImageView profilepic;
 
-        private Pair<String, String> currentPair;
+        public FriendsObject currentfriend = new FriendsObject("","",0);
 
-        public MyViewHolder(final View itemView) {
+        public FriendViewHolder(final View itemView) {
             super(itemView);
 
             name = ((TextView) itemView.findViewById(R.id.name));
-            description = ((TextView) itemView.findViewById(R.id.description));
+            lastWalk = ((TextView) itemView.findViewById(R.id.lastWalk));
+            profilepic = ((ImageView) itemView.findViewById(R.id.friendpic));
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     new AlertDialog.Builder(itemView.getContext())
-                            .setTitle(currentPair.first)
-                            .setMessage(currentPair.second)
+                            .setTitle(currentfriend.name)
+                            .setMessage(currentfriend.lastWalk)
                             .show();
                 }
             });
         }
 
-        public void display(Pair<String, String> pair) {
-            currentPair = pair;
-            name.setText(pair.first);
-            description.setText(pair.second);
+        public void display(FriendsObject friend) {
+            currentfriend = friend;
+            name.setText(friend.name);
+            lastWalk.setText(friend.lastWalk);
+            profilepic.setImageResource(friend.profilepic);
         }
     }
+
+    public static class FriendsObject {
+        public String name;
+        public String lastWalk;
+        public int profilepic;
+
+        public FriendsObject(String pname, String plastWalk, int pprofilepic){
+            this.name = pname;
+            this.lastWalk = plastWalk;
+            this.profilepic = pprofilepic;
+        }
+    }
+
 
 }

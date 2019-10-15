@@ -46,10 +46,11 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="15dp"
                 android:textAppearance="?android:attr/textAppearanceLarge"
+                android:paddingTop="20dp"
                 tools:text="Personnage"></TextView>
 
             <TextView
-                android:id="@+id/description"
+                android:id="@+id/lastWalk"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"

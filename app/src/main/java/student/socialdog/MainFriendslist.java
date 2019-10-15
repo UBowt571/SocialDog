@@ -10,7 +10,11 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+
 public class MainFriendslist extends AppCompatActivity {
+
+    public static ArrayList<MonAdapteur.FriendsObject> friendslist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +22,29 @@ public class MainFriendslist extends AppCompatActivity {
         setContentView(R.layout.friendslist_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        friendslist = new ArrayList<MonAdapteur.FriendsObject>();
+        friendslist.add(new MonAdapteur.FriendsObject("Marie Gagnon",
+                "Actuellement en promenade",R.drawable.mgagnon));
+        friendslist.add(new MonAdapteur.FriendsObject("Michel Tremblay",
+                "Dernière promenade il y a 5 jours.",R.drawable.mtremblay));
+        friendslist.add(new MonAdapteur.FriendsObject("Alice Martel",
+                "Dernière promenade il y a plus d'un mois.",R.drawable.amartel));
+        friendslist.add(new MonAdapteur.FriendsObject("Maxime Defrances",
+                "Dernière promenade il y a deux semaines.",R.drawable.mgagnon));
+        friendslist.add(new MonAdapteur.FriendsObject("Thomas Gabriel",
+                "Dernière promenade il y a plus d'un mois.",R.drawable.amartel));
+        friendslist.add(new MonAdapteur.FriendsObject("Anatole Martin",
+                "Dernière promenade il y a plus d'un mois.",R.drawable.mtremblay));
+        friendslist.add(new MonAdapteur.FriendsObject("Roger Gagnon",
+                "Dernière promenade il y a plus d'un mois.",R.drawable.mtremblay));
+        friendslist.add(new MonAdapteur.FriendsObject("Michèle Madre",
+                "Dernière promenade il y a plus d'un mois.",R.drawable.amartel));
+        friendslist.add(new MonAdapteur.FriendsObject("Yanis Vervet",
+                "Dernière promenade il y a plus d'un mois.",R.drawable.mgagnon));
+
+
+
 
         // Création du RecyclerView
         RecyclerView recyclerView = findViewById(R.id.RV_friends);
@@ -29,8 +56,11 @@ public class MainFriendslist extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         // Spécification de MonAdapteur pour le recyclerview
-
         recyclerView.setAdapter(new MonAdapteur());
+
+
+
+
 
 
 
