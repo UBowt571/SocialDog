@@ -9,13 +9,18 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
+
 public class DrawerItemCustomAdapter extends ArrayAdapter<DataModel> {
 
-    Context mContext;
-    int layoutResourceId;
-    DataModel data[] = null;
+    private Context mContext;
+    private int layoutResourceId;
+    private ArrayList<DataModel> data;
+    //private DataModel[] data = null;
 
-    public DrawerItemCustomAdapter(Context mContext, int layoutResourceId, DataModel[] data) {
+    DrawerItemCustomAdapter(Context mContext, int layoutResourceId, ArrayList<DataModel> data) {
 
         super(mContext, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
@@ -24,22 +29,23 @@ public class DrawerItemCustomAdapter extends ArrayAdapter<DataModel> {
     }
 
     @Override
+    @NonNull
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        View listItem = convertView;
+        if (convertView == null) {
+            LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
+            convertView = inflater.inflate(layoutResourceId, parent, false);
 
-        LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
-        listItem = inflater.inflate(layoutResourceId, parent, false);
+            ImageView imageViewIcon = convertView.findViewById(R.id.imageViewIcon);
+            TextView textViewName = convertView.findViewById(R.id.textViewName);
 
-        ImageView imageViewIcon = (ImageView) listItem.findViewById(R.id.imageViewIcon);
-        TextView textViewName = (TextView) listItem.findViewById(R.id.textViewName);
-
-        DataModel folder = data[position];
+            DataModel folder = data.get(position);
 
 
-        imageViewIcon.setImageResource(folder.icon);
-        textViewName.setText(folder.name);
+            imageViewIcon.setImageResource(folder.icon);
+            textViewName.setText(folder.name);
+        }
 
-        return listItem;
+        return convertView;
     }
 }

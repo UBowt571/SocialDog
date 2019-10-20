@@ -2,10 +2,6 @@ package student.socialdog;
 
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -14,10 +10,12 @@ import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.View;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     Toolbar toolbar;
-    private CharSequence mDrawerTitle;
+    CharSequence mDrawerTitle;
     private CharSequence mTitle;
     androidx.appcompat.app.ActionBarDrawerToggle mDrawerToggle;
 
@@ -40,19 +38,22 @@ public class MainActivity extends AppCompatActivity {
 
         setupToolbar();
 
-        DataModel[] drawerItem = new DataModel[3];
+        ArrayList<DataModel> drawerItem = new ArrayList<>();
+        //DataModel[] drawerItem = new DataModel[4];
 
-        drawerItem[0] = new DataModel(R.drawable.connect, "Connect");
-        drawerItem[1] = new DataModel(R.drawable.fixtures, "Fixtures");
-        drawerItem[2] = new DataModel(R.drawable.table, "Table");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        drawerItem.add(new DataModel(R.drawable.connect, "Connect"));
+
+        drawerItem.add(new DataModel(R.drawable.fixtures, "Fixtures"));
+        drawerItem.add(new DataModel(R.drawable.table, "Table"));
+        drawerItem.add(new DataModel(R.drawable.img_383022petit, "lezamis"));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
         DrawerItemCustomAdapter adapter = new DrawerItemCustomAdapter(this, R.layout.list_view_item_row, drawerItem);
         mDrawerList.setAdapter(adapter);
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
         setupDrawerToggle();
 
     }
@@ -95,6 +96,11 @@ public class MainActivity extends AppCompatActivity {
             mDrawerLayout.closeDrawer(mDrawerList);
 
         } else {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            List fragments = fragmentManager.getFragments();
+            fragmentManager.popBackStack();
+            //fragment.getActivity().getFragmentManager().popBackStack();
+
             Log.e("MainActivity", "Error in creating fragment");
         }
     }
