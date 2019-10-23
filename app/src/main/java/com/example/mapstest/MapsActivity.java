@@ -46,7 +46,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps2);
         if(isServicesOK()){
-            //Toast.makeText(this, "Services OK", Toast.LENGTH_LONG).show();
+            getLocationPermission();
+
         }
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
     }
@@ -55,7 +56,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        goToLocation(50,50);
+        Toast.makeText(MapsActivity.this, "Map Is ready", Toast.LENGTH_SHORT).show();
+
+        goToLocation(45,-73);
 
     }
 
@@ -121,6 +124,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
                     COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
                 mLocationPermissionsGranted = true;
+                initMap();
             }else{
                 ActivityCompat.requestPermissions(this,
                         permissions,
