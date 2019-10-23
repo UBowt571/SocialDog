@@ -13,13 +13,14 @@ import android.view.View;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String[] mNavigationDrawerItemTitles;
+    private ArrayList<JSONObject> mNavigationDrawerItems;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     Toolbar toolbar;
@@ -31,28 +32,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        JSONObject list_items = assetLoader.JSON(this,"menu_items.json");
+
         mTitle = mDrawerTitle = getTitle();
-        mNavigationDrawerItemTitles= getResources().getStringArray(R.array.navigation_drawer_items_array);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        mNavigationDrawerItems = assetLoader.getJSONArray(list_items,"items");
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        mDrawerList = findViewById(R.id.left_drawer);
 
         setupToolbar();
 
-        ArrayList<DataModel> drawerItem = new ArrayList<>();
-        //DataModel[] drawerItem = new DataModel[4];
-
-        drawerItem.add(new DataModel(R.drawable.connect, "Connect"));
-
-        drawerItem.add(new DataModel(R.drawable.fixtures, "Fixtures"));
-        drawerItem.add(new DataModel(R.drawable.table, "Table"));
-        drawerItem.add(new DataModel(R.drawable.img_383022petit, "lezamis"));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        DrawerItemCustomAdapter adapter = new DrawerItemCustomAdapter(this, R.layout.list_view_item_row, drawerItem);
+        DrawerItemCustomAdapter adapter = new DrawerItemCustomAdapter(this, R.layout.list_view_item_row, mNavigationDrawerItems);
         mDrawerList.setAdapter(adapter);
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         setupDrawerToggle();
 
@@ -81,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
             case 2:
                 fragment = new TableFragment();
                 break;
+            case 3:
+                fragment = new TableFragment();
+                break;
 
             default:
                 break;
@@ -92,15 +92,18 @@ public class MainActivity extends AppCompatActivity {
 
             mDrawerList.setItemChecked(position, true);
             mDrawerList.setSelection(position);
-            setTitle(mNavigationDrawerItemTitles[position]);
+            try {
+                setTitle(mNavigationDrawerItems.get(position).getString("name"));
+            }catch (Exception ex){
+                ex.printStackTrace();
+                return;
+            }
             mDrawerLayout.closeDrawer(mDrawerList);
 
         } else {
             FragmentManager fragmentManager = getSupportFragmentManager();
             List fragments = fragmentManager.getFragments();
             fragmentManager.popBackStack();
-            //fragment.getActivity().getFragmentManager().popBackStack();
-
             Log.e("MainActivity", "Error in creating fragment");
         }
     }
@@ -137,5 +140,8 @@ public class MainActivity extends AppCompatActivity {
         mDrawerToggle = new androidx.appcompat.app.ActionBarDrawerToggle(this,mDrawerLayout,toolbar,R.string.app_name, R.string.app_name);
         //This is necessary to change the icon of the Drawer Toggle upon state change.
         mDrawerToggle.syncState();
+    }
+    void getImagesID(){
+
     }
 }

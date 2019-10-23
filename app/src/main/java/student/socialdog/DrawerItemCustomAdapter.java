@@ -2,6 +2,8 @@ package student.socialdog;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,17 +12,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class DrawerItemCustomAdapter extends ArrayAdapter<DataModel> {
+public class DrawerItemCustomAdapter extends ArrayAdapter<JSONObject> {
 
     private Context mContext;
     private int layoutResourceId;
-    private ArrayList<DataModel> data;
+    private ArrayList<JSONObject> data;
     //private DataModel[] data = null;
 
-    DrawerItemCustomAdapter(Context mContext, int layoutResourceId, ArrayList<DataModel> data) {
+    DrawerItemCustomAdapter(Context mContext, int layoutResourceId, ArrayList<JSONObject> data) {
 
         super(mContext, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
@@ -39,13 +42,33 @@ public class DrawerItemCustomAdapter extends ArrayAdapter<DataModel> {
             ImageView imageViewIcon = convertView.findViewById(R.id.imageViewIcon);
             TextView textViewName = convertView.findViewById(R.id.textViewName);
 
-            DataModel folder = data.get(position);
-
-
-            imageViewIcon.setImageResource(folder.icon);
-            textViewName.setText(folder.name);
+            try {
+                int imageID = getResIDfromImageName(data.get(position).getString("image"));
+                Bitmap resizedBitmap = Bitmap.createScaledBitmap(getBitmapFromResID(imageID).getBitmap(),24,24,true);
+                imageViewIcon.setImageBitmap(resizedBitmap);
+                textViewName.setText(data.get(position).getString("name"));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         }
 
         return convertView;
+    }
+
+
+    public BitmapDrawable getBitmapFromResID(int resID){
+        BitmapDrawable b = (BitmapDrawable)mContext.getResources().getDrawable(resID);
+        return b;
+    }
+
+    private int getImgHeightFromResID(int resID){
+        return getBitmapFromResID(resID).getBitmap().getHeight();
+    }
+    private int getImgWidthFromResID(int resID){
+        return getBitmapFromResID(resID).getBitmap().getWidth();
+    }
+    private int getResIDfromImageName(String imageName){
+        return mContext.getResources().getIdentifier(imageName , "drawable", mContext.getPackageName());
     }
 }
