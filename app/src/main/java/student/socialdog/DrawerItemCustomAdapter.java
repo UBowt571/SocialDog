@@ -2,8 +2,6 @@ package student.socialdog;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,14 +42,7 @@ public class DrawerItemCustomAdapter extends ArrayAdapter<DataModel> {
             DataModel folder = data.get(position);
 
 
-
             imageViewIcon.setImageResource(folder.icon);
-            if(folder.name.equals("lezamis")){
-                Bitmap yourBitmap = BitmapFactory.decodeResource(((Activity) mContext).getApplication().getResources(), folder.icon);
-                Bitmap resized = Bitmap.createScaledBitmap(yourBitmap, 24, 21, true);
-                imageViewIcon.setImageBitmap(yourBitmap);
-            }
-
             textViewName.setText(folder.name);
         }
 

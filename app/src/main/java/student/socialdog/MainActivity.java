@@ -34,14 +34,14 @@ public class MainActivity extends AppCompatActivity {
         mTitle = mDrawerTitle = getTitle();
         mNavigationDrawerItemTitles= getResources().getStringArray(R.array.navigation_drawer_items_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = findViewById(R.id.left_drawer);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         setupToolbar();
 
         ArrayList<DataModel> drawerItem = new ArrayList<>();
         //DataModel[] drawerItem = new DataModel[4];
 
-        drawerItem.add(new DataModel(R.drawable.trajets_petit, "istorik"));
+        drawerItem.add(new DataModel(R.drawable.connect, "Connect"));
 
         drawerItem.add(new DataModel(R.drawable.fixtures, "Fixtures"));
         drawerItem.add(new DataModel(R.drawable.table, "Table"));
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         DrawerItemCustomAdapter adapter = new DrawerItemCustomAdapter(this, R.layout.list_view_item_row, drawerItem);
         mDrawerList.setAdapter(adapter);
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-        mDrawerLayout = findViewById(R.id.drawer_layout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         setupDrawerToggle();
 
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void setupToolbar(){
-        toolbar = findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
