@@ -65,6 +65,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             getDeviceLocation();
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setCompassEnabled(true);
+
+            MarkerOptions options = new MarkerOptions()
+                    .position(new LatLng(48.41919, -71.0549273))
+                    .title("L'univesité des boss");
+            mMap.addMarker(options);
         }
 
 
