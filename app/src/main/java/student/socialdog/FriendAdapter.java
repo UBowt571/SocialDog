@@ -1,9 +1,6 @@
 package student.socialdog;
 
 import android.app.AlertDialog;
-import android.media.Image;
-import android.text.Html;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +10,8 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-public class MonAdapteur extends RecyclerView.Adapter<MonAdapteur.FriendViewHolder> {
+public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendViewHolder> {
 
     public ArrayList<FriendsObject> friendslisted = MainFriendslist.friendslist;
 

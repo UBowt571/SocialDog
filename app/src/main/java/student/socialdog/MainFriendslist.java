@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class MainFriendslist extends AppCompatActivity {
 
-    public static ArrayList<MonAdapteur.FriendsObject> friendslist;
+    public static ArrayList<FriendAdapter.FriendsObject> friendslist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,24 +23,24 @@ public class MainFriendslist extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        friendslist = new ArrayList<MonAdapteur.FriendsObject>();
-        friendslist.add(new MonAdapteur.FriendsObject("Marie Gagnon",
+        friendslist = new ArrayList<FriendAdapter.FriendsObject>();
+        friendslist.add(new FriendAdapter.FriendsObject("Marie Gagnon",
                 "Actuellement en promenade",R.drawable.mgagnon));
-        friendslist.add(new MonAdapteur.FriendsObject("Michel Tremblay",
+        friendslist.add(new FriendAdapter.FriendsObject("Michel Tremblay",
                 "Dernière promenade il y a 5 jours.",R.drawable.mtremblay));
-        friendslist.add(new MonAdapteur.FriendsObject("Alice Martel",
+        friendslist.add(new FriendAdapter.FriendsObject("Alice Martel",
                 "Dernière promenade il y a plus d'un mois.",R.drawable.amartel));
-        friendslist.add(new MonAdapteur.FriendsObject("Maxime Defrances",
+        friendslist.add(new FriendAdapter.FriendsObject("Maxime Defrances",
                 "Dernière promenade il y a deux semaines.",R.drawable.mgagnon));
-        friendslist.add(new MonAdapteur.FriendsObject("Thomas Gabriel",
+        friendslist.add(new FriendAdapter.FriendsObject("Thomas Gabriel",
                 "Dernière promenade il y a plus d'un mois.",R.drawable.amartel));
-        friendslist.add(new MonAdapteur.FriendsObject("Anatole Martin",
+        friendslist.add(new FriendAdapter.FriendsObject("Anatole Martin",
                 "Dernière promenade il y a plus d'un mois.",R.drawable.mtremblay));
-        friendslist.add(new MonAdapteur.FriendsObject("Roger Gagnon",
+        friendslist.add(new FriendAdapter.FriendsObject("Roger Gagnon",
                 "Dernière promenade il y a plus d'un mois.",R.drawable.mtremblay));
-        friendslist.add(new MonAdapteur.FriendsObject("Michèle Madre",
+        friendslist.add(new FriendAdapter.FriendsObject("Michèle Madre",
                 "Dernière promenade il y a plus d'un mois.",R.drawable.amartel));
-        friendslist.add(new MonAdapteur.FriendsObject("Yanis Vervet",
+        friendslist.add(new FriendAdapter.FriendsObject("Yanis Vervet",
                 "Dernière promenade il y a plus d'un mois.",R.drawable.mgagnon));
 
 
@@ -55,19 +55,8 @@ public class MainFriendslist extends AppCompatActivity {
                 LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        // Spécification de MonAdapteur pour le recyclerview
-        recyclerView.setAdapter(new MonAdapteur());
-
-
-
-
-
-
-
-
-
-
-
+        // Spécification de FriendAdapter pour le recyclerview
+        recyclerView.setAdapter(new FriendAdapter());
     }
 
 
