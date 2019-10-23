@@ -24,6 +24,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -40,6 +41,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private Boolean mLocationPermissionsGranted = false;
     private FusedLocationProviderClient mFusedLocationprividerClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +60,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Toast.makeText(MapsActivity.this, "Map Is ready", Toast.LENGTH_SHORT).show();
 
-        goToLocation(45,-73);
+        //goToLocation(45,-73);
+        if(mLocationPermissionsGranted){
+            getDeviceLocation();
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setCompassEnabled(true);
+        }
+
 
     }
 
@@ -92,7 +100,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    private void AddMarker(Marker marker){
+        MarkerOptions options = new MarkerOptions()
+                                    .position(marker.getPosition())
+                                    .title(marker.getTitle());
+        mMap.addMarker(options);
 
+    }
 
     private void initMap(){
         Log.d(TAG, "initMap: initializing map");
