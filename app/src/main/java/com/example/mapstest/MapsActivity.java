@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
+import android.location.LocationListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback{
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
     private GoogleMap mMap;
     private static final int ERROR_DIALOG_REQUEST = 9001;
@@ -53,6 +54,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     List<Marker> bagMarkers = new ArrayList<Marker>();
     List<LatLng> bagPositions = new ArrayList<LatLng>();
     LatLng currentLocation;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +75,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         BitmapDrawable treeBitmap=(BitmapDrawable)getResources().getDrawable(R.drawable.arbre);
         treeIcon = Bitmap.createScaledBitmap(treeBitmap.getBitmap(), width, height, false);
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
     }
 
     @Override
@@ -95,7 +98,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //goToLocation(45,-73);
         if(mLocationPermissionsGranted){
             SetCurrentLocation();
-            //goToLocation(currentLocation.latitude, currentLocation.longitude);
+            //currentLocation = new LatLng(10,10);
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setCompassEnabled(true);
 
@@ -114,6 +117,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    @Override
+    public void onLocationChanged(Location location) {
+        currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+
+        Log.e("onLocationChanged",Double.toString(currentLocation.latitude));
+        Log.e("onLocationChanged",Double.toString(currentLocation.longitude));
+
+        Toast.makeText(MapsActivity.this, "Location changed", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+
+    }
+
 
     private void SetCurrentLocation()
     {
@@ -129,9 +157,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if (task.isSuccessful()){
                             Log.d(TAG, "goToDeviceLocation : Success");
                             Location currLocation = (Location) task.getResult();
-                            //goToLocation(currLocation.getLatitude(), currLocation.getLongitude());
-                            //currentLocation = new LatLng(currLocation.getLatitude(), currLocation.getLongitude());
-                            RealSet(currLocation);
+                            goToLocation(currLocation.getLatitude(), currLocation.getLongitude());
                         } else {
                             Log.d(TAG, "goToDeviceLocation : can't find location");
                             Toast.makeText(MapsActivity.this, "Can't get current location !", Toast.LENGTH_SHORT).show();
@@ -144,21 +170,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void RealSet(Location location)
-    {
-        currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-    }
 
-
-
-
-    private void AddMarker(Marker marker){
-        MarkerOptions options = new MarkerOptions()
-                                    .position(marker.getPosition())
-                                    .title(marker.getTitle());
-        mMap.addMarker(options);
-
-    }
 
     private void initMap(){
         Log.d(TAG, "initMap: initializing map");
