@@ -7,6 +7,8 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,6 +33,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback{
 
@@ -43,6 +48,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private Boolean mLocationPermissionsGranted = false;
     private FusedLocationProviderClient mFusedLocationprividerClient;
+    Bitmap bagIcon;
+    Bitmap treeIcon;
+    List<Marker> markers = new ArrayList<Marker>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +58,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps2);
         if(isServicesOK()){
             getLocationPermission();
-
         }
+
+        int height = 100;
+        int width = 100;
+
+        BitmapDrawable bagBitmap=(BitmapDrawable)getResources().getDrawable(R.drawable.sacaca);
+        bagIcon = Bitmap.createScaledBitmap(bagBitmap.getBitmap(), width, height, false);
+
+        BitmapDrawable treeBitmap=(BitmapDrawable)getResources().getDrawable(R.drawable.arbre);
+        treeIcon = Bitmap.createScaledBitmap(treeBitmap.getBitmap(), width, height, false);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
     }
@@ -71,8 +87,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             MarkerOptions options = new MarkerOptions()
                     .position(new LatLng(48.41919, -71.0549273))
                     .title("L'univesité des boss")
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.sacaca));
+                    .icon(BitmapDescriptorFactory.fromBitmap(bagIcon));
+
+            MarkerOptions options2 = new MarkerOptions()
+                    .position(new LatLng(48.5, -71.0549273))
+                    .title("L'univesité des boss")
+                    .icon(BitmapDescriptorFactory.fromBitmap(treeIcon));
             mMap.addMarker(options);
+            mMap.addMarker(options2);
         }
 
 
