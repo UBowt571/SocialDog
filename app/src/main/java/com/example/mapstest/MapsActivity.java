@@ -23,6 +23,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -42,7 +44,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Boolean mLocationPermissionsGranted = false;
     private FusedLocationProviderClient mFusedLocationprividerClient;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +52,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             getLocationPermission();
 
         }
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
     }
 
@@ -68,7 +70,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             MarkerOptions options = new MarkerOptions()
                     .position(new LatLng(48.41919, -71.0549273))
-                    .title("L'univesité des boss");
+                    .title("L'univesité des boss")
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.sacaca));
             mMap.addMarker(options);
         }
 
