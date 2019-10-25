@@ -50,7 +50,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FusedLocationProviderClient mFusedLocationprividerClient;
     Bitmap bagIcon;
     Bitmap treeIcon;
-    List<Marker> markers = new ArrayList<Marker>();
+    List<Marker> bagMarkers = new ArrayList<Marker>();
+    List<LatLng> bagPositions = new ArrayList<LatLng>();
+    LatLng currentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         BitmapDrawable bagBitmap=(BitmapDrawable)getResources().getDrawable(R.drawable.sacaca);
         bagIcon = Bitmap.createScaledBitmap(bagBitmap.getBitmap(), width, height, false);
 
+
         BitmapDrawable treeBitmap=(BitmapDrawable)getResources().getDrawable(R.drawable.arbre);
         treeIcon = Bitmap.createScaledBitmap(treeBitmap.getBitmap(), width, height, false);
 
@@ -78,22 +81,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Toast.makeText(MapsActivity.this, "Map Is ready", Toast.LENGTH_SHORT).show();
 
+        bagPositions.add(new LatLng(48.41919, -71.0549273));
+
+        for (LatLng pos : bagPositions)
+        {
+            Marker marker = mMap.addMarker(new MarkerOptions()
+                                                .position(pos)
+                                                .icon(BitmapDescriptorFactory.fromBitmap(bagIcon)));
+            bagMarkers.add(marker);
+
+        }
+
         //goToLocation(45,-73);
         if(mLocationPermissionsGranted){
-            getDeviceLocation();
+            SetCurrentLocation();
+            //goToLocation(currentLocation.latitude, currentLocation.longitude);
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setCompassEnabled(true);
 
-            MarkerOptions options = new MarkerOptions()
+            /*MarkerOptions options = new MarkerOptions()
                     .position(new LatLng(48.41919, -71.0549273))
                     .title("L'univesité des boss")
-                    .icon(BitmapDescriptorFactory.fromBitmap(bagIcon));
+                    .icon(BitmapDescriptorFactory.fromBitmap(bagIcon));*/
 
             MarkerOptions options2 = new MarkerOptions()
                     .position(new LatLng(48.5, -71.0549273))
                     .title("L'univesité des boss")
                     .icon(BitmapDescriptorFactory.fromBitmap(treeIcon));
-            mMap.addMarker(options);
             mMap.addMarker(options2);
         }
 
@@ -101,9 +115,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    private void getDeviceLocation()
+    private void SetCurrentLocation()
     {
-        Log.d(TAG, "getDeviceLocation");
+        Log.d(TAG, "goToDeviceLocation");
 
         mFusedLocationprividerClient = LocationServices.getFusedLocationProviderClient(this);
         try{
@@ -113,21 +127,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()){
-                            Log.d(TAG, "getDeviceLocation : Success");
-                            Location currentLocation = (Location) task.getResult();
-                            goToLocation(currentLocation.getLatitude(), currentLocation.getLongitude());
+                            Log.d(TAG, "goToDeviceLocation : Success");
+                            Location currLocation = (Location) task.getResult();
+                            //goToLocation(currLocation.getLatitude(), currLocation.getLongitude());
+                            //currentLocation = new LatLng(currLocation.getLatitude(), currLocation.getLongitude());
+                            RealSet(currLocation);
                         } else {
-                            Log.d(TAG, "getDeviceLocation : can't find location");
+                            Log.d(TAG, "goToDeviceLocation : can't find location");
                             Toast.makeText(MapsActivity.this, "Can't get current location !", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
             }
         }catch (SecurityException e){
-            Log.e(TAG, "getDeviceLocation : SecurityException " + e.getMessage());
+            Log.e(TAG, "goToDeviceLocation : SecurityException " + e.getMessage());
         }
-
     }
+
+    private void RealSet(Location location)
+    {
+        currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+    }
+
+
 
 
     private void AddMarker(Marker marker){
