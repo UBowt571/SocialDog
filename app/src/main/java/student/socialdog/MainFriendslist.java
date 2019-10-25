@@ -21,10 +21,10 @@ public class MainFriendslist extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         View rootView = inflater.inflate(R.layout.friendslist_main, container, false);
         super.onCreate(savedInstanceState);
         friendslist = new ArrayList<>();
+
         friendslist.add(new FriendAdapter.FriendsObject("Marie Gagnon",
                 "Actuellement en promenade",R.drawable.mgagnon));
         friendslist.add(new FriendAdapter.FriendsObject("Michel Tremblay",
@@ -43,7 +43,8 @@ public class MainFriendslist extends Fragment {
                 "Dernière promenade il y a plus d'un mois.",R.drawable.amartel));
         friendslist.add(new FriendAdapter.FriendsObject("Yanis Vervet",
                 "Dernière promenade il y a plus d'un mois.",R.drawable.mgagnon));
-        RecyclerView recyclerView;
+
+RecyclerView recyclerView;
         try {
             // Création du RecyclerView
             recyclerView = rootView.findViewById(R.id.RV_friends);
@@ -55,6 +56,7 @@ public class MainFriendslist extends Fragment {
 
         //Création du linearLayout vertical et association au recyclerView
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL, false);
+
         recyclerView.setLayoutManager(layoutManager);
 
         // Spécification de FriendAdapter pour le recyclerview

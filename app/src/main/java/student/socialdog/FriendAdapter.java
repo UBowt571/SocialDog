@@ -15,8 +15,6 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
 
     private ArrayList<FriendsObject> friendslisted = MainFriendslist.friendslist;
 
-
-
     @Override
     public int getItemCount() {
         ArrayList<FriendsObject> friendslistedtest = MainFriendslist.friendslist;
