@@ -22,16 +22,20 @@ public class MainDogslist extends AppCompatActivity {
         setContentView(R.layout.dogslist_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        int color1 = Color.argb(100, 0,97,0);
+        int color2 = Color.argb(100, 97,0,0);
+        int color3 = Color.argb(100, 0,0,75);
+        int color4 = Color.argb(100, 179,107,0);
 
         dogslist = new ArrayList<DogAdapter.DogObject>();
         dogslist.add(new DogAdapter.DogObject("Rex",
-                "Shiba Inu","1 an", "Dernière promenade hier.", Color.GREEN, R.drawable.dog1));
+                "Shiba Inu","1 an", "Dernière promenade hier.", color1, R.drawable.dog1));
         dogslist.add(new DogAdapter.DogObject("Buzz",
-                "Caniche","1 an et demi", "Dernière promenade hier.", Color.WHITE, R.drawable.dog2));
+                "Caniche","1 an et demi", "Dernière promenade hier.", color2, R.drawable.dog2));
         dogslist.add(new DogAdapter.DogObject("Rantanplan",
-                "Corniaud","2 ans", "Dernière promenade il y a 3 jours.", Color.MAGENTA, R.drawable.dog3));
+                "Corniaud","2 ans", "Dernière promenade il y a 3 jours.", color3, R.drawable.dog3));
         dogslist.add(new DogAdapter.DogObject("Saucisse",
-                "Teckel","3 ans", "Dernière promenade il y a 3 jours.", Color.GRAY, R.drawable.dog3));
+                "Teckel","3 ans", "Dernière promenade il y a 3 jours.", color4, R.drawable.dog3));
 
 
 
