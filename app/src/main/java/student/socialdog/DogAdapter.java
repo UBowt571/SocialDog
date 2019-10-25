@@ -8,19 +8,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+
 import static student.socialdog.R.color.*;
 
 public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
-
-    public ArrayList<DogObject> dogslisted = MainDogslist.dogslist;
-
-
+    private ArrayList<DogObject> dogslisted = MainDogslist.dogslist;
 
     @Override
     public int getItemCount() {
@@ -43,7 +39,7 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
         holder.display(dog);
     }
 
-    public class DogViewHolder extends RecyclerView.ViewHolder {
+    class DogViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView dogname;
         private final TextView dograce;
@@ -54,15 +50,15 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
 
         public DogObject currentdog = new DogObject("","","1 an", "",Color.WHITE, 0);
 
-        public DogViewHolder(final View itemView) {
+        DogViewHolder(final View itemView) {
             super(itemView);
-
-            dogname = ((TextView) itemView.findViewById(R.id.dogname));
-            dograce = ((TextView) itemView.findViewById(R.id.dograce));
-            dogage = ((TextView) itemView.findViewById(R.id.dogage));
-            lastWalk = ((TextView) itemView.findViewById(R.id.lastWalk));
-            profilepic = ((ImageView) itemView.findViewById(R.id.dogpic));
+            dogname = itemView.findViewById(R.id.dogname);
+            dograce = itemView.findViewById(R.id.dograce);
+            dogage = itemView.findViewById(R.id.dogage);
+            lastWalk = itemView.findViewById(R.id.lastWalk);
+            profilepic = itemView.findViewById(R.id.dogpic);
             color = ((LinearLayout) itemView.findViewById(R.id.doglinearLayout));
+
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -77,27 +73,29 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
             });
         }
 
-        public void display(DogObject dog) {
+        void display(DogObject dog) {
             currentdog = dog;
             dogname.setText(dog.dogname);
             dograce.setText(dog.dograce);
             dogage.setText(dog.dogage);
             lastWalk.setText(dog.lastWalk);
             profilepic.setImageResource(dog.dogpic);
+
             color.setBackgroundColor(dog.dogcolor);
         }
     }
 
-    public static class DogObject {
-        public String dogname;
-        public String dograce;
-        public String dogage;
-        public String lastWalk;
+    static class DogObject {
+        String dogname;
+        String dograce;
+        String dogage;
+        String lastWalk;
         public int dogcolor;
         public int dogpic;
 
 
-        public DogObject(String pname, String pdograce, String pdogage, String plastWalk, int pdogcolor, int pdogpic){
+        DogObject(String pname, String pdograce, String pdogage, String plastWalk, int pdogcolor, int pdogpic){
+
             this.dogname = pname;
             this.dograce = pdograce;
             this.dogage = pdogage;
@@ -106,6 +104,4 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
             this.dogpic = pdogpic;
         }
     }
-
-
 }

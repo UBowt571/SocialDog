@@ -11,6 +11,7 @@
     android:layout_marginTop="0dp"
     android:paddingTop="15dp"
     android:paddingBottom="15dp"
+
     android:orientation="horizontal"
     app:layout_constraintTop_toTopOf="parent"
     tools:layout_editor_absoluteX="15dp">
@@ -50,7 +51,8 @@
                 android:layout_marginBottom="15dp"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:paddingTop="20dp"
-                tools:text="Dog name"></TextView>
+                tools:text="Dog name" />
+
             <TextView
                 android:id="@+id/dograce"
                 android:layout_width="wrap_content"
@@ -58,9 +60,8 @@
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:text="Dog Race">
+                tools:text="Dog Race" />
 
-            </TextView>
             <TextView
                 android:id="@+id/dogage"
                 android:layout_width="wrap_content"
@@ -68,9 +69,7 @@
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:text="Dog Age">
-
-            </TextView>
+                tools:text="Dog Age" />
 
             <TextView
                 android:id="@+id/lastWalk"
@@ -79,9 +78,7 @@
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:text="Dernière promenade il y a 877573775 semaines">
-
-            </TextView>
+                tools:text="Dernière promenade il y a 877573775 semaines" />
 
         </LinearLayout>
 

@@ -1,29 +1,30 @@
 package student.socialdog;
 
 import android.os.Bundle;
-
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-public class MainFriendslist extends AppCompatActivity {
+public class MainFriendslist extends Fragment {
 
-    public static ArrayList<FriendAdapter.FriendsObject> friendslist;
+    static ArrayList<FriendAdapter.FriendsObject> friendslist;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.friendslist_main, container, false);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.friendslist_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        friendslist = new ArrayList<>();
 
-        friendslist = new ArrayList<FriendAdapter.FriendsObject>();
         friendslist.add(new FriendAdapter.FriendsObject("Marie Gagnon",
                 "Actuellement en promenade",R.drawable.mgagnon));
         friendslist.add(new FriendAdapter.FriendsObject("Michel Tremblay",
@@ -43,46 +44,24 @@ public class MainFriendslist extends AppCompatActivity {
         friendslist.add(new FriendAdapter.FriendsObject("Yanis Vervet",
                 "Dernière promenade il y a plus d'un mois.",R.drawable.mgagnon));
 
-
-
-
-        // Création du RecyclerView
-        RecyclerView recyclerView = findViewById(R.id.RV_friends);
-        recyclerView.setHasFixedSize(true);
+RecyclerView recyclerView;
+        try {
+            // Création du RecyclerView
+            recyclerView = rootView.findViewById(R.id.RV_friends);
+            recyclerView.setHasFixedSize(true);
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return null;
+        }
 
         //Création du linearLayout vertical et association au recyclerView
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this,
-                LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL, false);
+
         recyclerView.setLayoutManager(layoutManager);
 
         // Spécification de FriendAdapter pour le recyclerview
         recyclerView.setAdapter(new FriendAdapter());
+
+        return rootView;
     }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-
-
-
 }
