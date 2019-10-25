@@ -76,10 +76,10 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new FixturesFragment();
                 break;
             case 2:
-                fragment = new TableFragment();
+                fragment = new MainFriendslist();
                 break;
             case 3:
-                fragment = new TableFragment();
+                fragment = new MainDogslist();
                 break;
 
             default:
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void setupToolbar(){
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }

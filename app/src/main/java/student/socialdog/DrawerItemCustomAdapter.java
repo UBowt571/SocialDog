@@ -32,7 +32,6 @@ public class DrawerItemCustomAdapter extends ArrayAdapter<JSONObject> {
     }
 
     @Override
-    @NonNull
     public View getView(int position, View convertView, ViewGroup parent) {
 
         if (convertView == null) {
@@ -44,7 +43,8 @@ public class DrawerItemCustomAdapter extends ArrayAdapter<JSONObject> {
 
             try {
                 int imageID = getResIDfromImageName(data.get(position).getString("image"));
-                Bitmap resizedBitmap = Bitmap.createScaledBitmap(getBitmapFromResID(imageID).getBitmap(),24,24,true);
+                //TODO : find best size for images
+                Bitmap resizedBitmap = Bitmap.createScaledBitmap(getBitmapFromResID(imageID).getBitmap(),70,70,true);
                 imageViewIcon.setImageBitmap(resizedBitmap);
                 textViewName.setText(data.get(position).getString("name"));
             } catch (Exception e) {
@@ -57,9 +57,8 @@ public class DrawerItemCustomAdapter extends ArrayAdapter<JSONObject> {
     }
 
 
-    public BitmapDrawable getBitmapFromResID(int resID){
-        BitmapDrawable b = (BitmapDrawable)mContext.getResources().getDrawable(resID);
-        return b;
+    private BitmapDrawable getBitmapFromResID(int resID){
+        return  (BitmapDrawable)mContext.getResources().getDrawable(resID);
     }
 
     private int getImgHeightFromResID(int resID){
