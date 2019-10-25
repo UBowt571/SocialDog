@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 public class MainDogslist extends Fragment {
 
-    static ArrayList<DogAdapter.DogObject> dogslist;
+    public static ArrayList<DogAdapter.DogObject> dogslist;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,13 +35,13 @@ public class MainDogslist extends Fragment {
         int color4 = Color.argb(100, 179,107,0);
         
         dogslist.add(new DogAdapter.DogObject("Rex",
-                "Shiba Inu","1 an", "Dernière promenade hier.", DogAdapter.DogObject.dogcolor.ORANGE, R.drawable.dog1));
+                "Shiba Inu","1 an", "Dernière promenade hier.", color1, R.drawable.dog1));
         dogslist.add(new DogAdapter.DogObject("Buzz",
-                "Caniche","1 an et demi", "Dernière promenade hier.", DogAdapter.DogObject.dogcolor.BLUE, R.drawable.dog2));
+                "Caniche","1 an et demi", "Dernière promenade hier.", color2, R.drawable.dog2));
         dogslist.add(new DogAdapter.DogObject("Rantanplan",
-                "Corniaud","2 ans", "Dernière promenade il y a 3 jours.", DogAdapter.DogObject.dogcolor.WHITE, R.drawable.dog3));
+                "Corniaud","2 ans", "Dernière promenade il y a 3 jours.", color3, R.drawable.dog3));
         dogslist.add(new DogAdapter.DogObject("Saucisse",
-                "Teckel","3 ans", "Dernière promenade il y a 3 jours.", DogAdapter.DogObject.dogcolor.WHITE, R.drawable.dog3));
+                "Teckel","3 ans", "Dernière promenade il y a 3 jours.", color4, R.drawable.dog3));
 
         RecyclerView recyclerView;
         try {
@@ -61,27 +61,5 @@ public class MainDogslist extends Fragment {
         recyclerView.setAdapter(new DogAdapter());
         
         return rootView;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }
