@@ -1,5 +1,6 @@
 package student.socialdog;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,13 +25,13 @@ public class MainDogslist extends AppCompatActivity {
 
         dogslist = new ArrayList<DogAdapter.DogObject>();
         dogslist.add(new DogAdapter.DogObject("Rex",
-                "Shiba Inu","1 an", "Dernière promenade hier.", DogAdapter.DogObject.dogcolor.ORANGE, R.drawable.dog1));
+                "Shiba Inu","1 an", "Dernière promenade hier.", Color.GREEN, R.drawable.dog1));
         dogslist.add(new DogAdapter.DogObject("Buzz",
-                "Caniche","1 an et demi", "Dernière promenade hier.", DogAdapter.DogObject.dogcolor.BLUE, R.drawable.dog2));
+                "Caniche","1 an et demi", "Dernière promenade hier.", Color.WHITE, R.drawable.dog2));
         dogslist.add(new DogAdapter.DogObject("Rantanplan",
-                "Corniaud","2 ans", "Dernière promenade il y a 3 jours.", DogAdapter.DogObject.dogcolor.WHITE, R.drawable.dog3));
+                "Corniaud","2 ans", "Dernière promenade il y a 3 jours.", Color.MAGENTA, R.drawable.dog3));
         dogslist.add(new DogAdapter.DogObject("Saucisse",
-                "Teckel","3 ans", "Dernière promenade il y a 3 jours.", DogAdapter.DogObject.dogcolor.WHITE, R.drawable.dog3));
+                "Teckel","3 ans", "Dernière promenade il y a 3 jours.", Color.GRAY, R.drawable.dog3));
 
 
 

@@ -1,15 +1,20 @@
 package student.socialdog;
 
 import android.app.AlertDialog;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+
+import static student.socialdog.R.color.*;
 
 public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
 
@@ -45,8 +50,9 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
         private final TextView dogage;
         private final TextView lastWalk;
         private final ImageView profilepic;
+        private final LinearLayout color;
 
-        public DogObject currentdog = new DogObject("","","1 an", "", DogObject.dogcolor.WHITE, 0);
+        public DogObject currentdog = new DogObject("","","1 an", "",Color.WHITE, 0);
 
         public DogViewHolder(final View itemView) {
             super(itemView);
@@ -56,6 +62,7 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
             dogage = ((TextView) itemView.findViewById(R.id.dogage));
             lastWalk = ((TextView) itemView.findViewById(R.id.lastWalk));
             profilepic = ((ImageView) itemView.findViewById(R.id.dogpic));
+            color = ((LinearLayout) itemView.findViewById(R.id.doglinearLayout));
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -77,6 +84,7 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
             dogage.setText(dog.dogage);
             lastWalk.setText(dog.lastWalk);
             profilepic.setImageResource(dog.dogpic);
+            color.setBackgroundColor(dog.dogcolor);
         }
     }
 
@@ -85,26 +93,16 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
         public String dograce;
         public String dogage;
         public String lastWalk;
-        public dogcolor color;
-        public enum dogcolor {
-            BLUE,
-            RED,
-            GREEN,
-            YELLOW,
-            BROWN,
-            ORANGE,
-            WHITE,
-            BLACK
-        }
+        public int dogcolor;
         public int dogpic;
 
 
-        public DogObject(String pname, String pdograce, String pdogage, String plastWalk, dogcolor pdogcolor, int pdogpic){
+        public DogObject(String pname, String pdograce, String pdogage, String plastWalk, int pdogcolor, int pdogpic){
             this.dogname = pname;
             this.dograce = pdograce;
             this.dogage = pdogage;
             this.lastWalk = plastWalk;
-            this.color = pdogcolor;
+            this.dogcolor = pdogcolor;
             this.dogpic = pdogpic;
         }
     }
