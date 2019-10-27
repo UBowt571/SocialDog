@@ -42,6 +42,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     List<Marker> treeMarkers = new ArrayList<Marker>();
     List<LatLng> treePositions = new ArrayList<LatLng>();
     LatLng currentLocation;
+    ArrayList<JSONObject> markersList;
 
     LocationManager locationManager;
 
@@ -96,36 +99,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        Toast.makeText(MapsActivity.this, "Map Is ready", Toast.LENGTH_SHORT).show();
+        JSONObject list_markers = assetLoader.JSON(this,"markers.json");
+        markersList = assetLoader.getJSONArray(list_markers, "markers");
 
-        bagPositions.add(new LatLng(48.41919, -71.0549273));
-        treePositions.add(new LatLng(48.45919, -71.0529273));
-        treePositions.add(new LatLng(48.44219, -71.0537273));
-        treePositions.add(new LatLng(48.49929, -71.0585273));
-        treePositions.add(new LatLng(48.49999, -71.05));
-        treePositions.add(new LatLng(48.420793, -71.064816));
-        bagPositions.add(new LatLng(48.4293, -71.06486));
-        bagPositions.add(new LatLng(48.430793, -71.06816));
-        bagPositions.add(new LatLng(48.380793, -71.054816));
+        int lati;
+        int longi;
+        String type;
+        Bitmap markerIcon = bagIcon;
 
-
-        for (LatLng pos : bagPositions)
+        for(int i = 0; i<markersList.size(); i++)
         {
-            Marker marker = mMap.addMarker(new MarkerOptions()
-                                                .position(pos)
-                                                .icon(BitmapDescriptorFactory.fromBitmap(bagIcon))
-                                                .title(getAddress(pos.latitude, pos.longitude)));
-            bagMarkers.add(marker);
+            Log.e(TAG, Integer.toString(i));
+            try{
+                type = markersList.get(i).getString("type");
+                lati = markersList.get(i).getInt("latitude");
+                longi = markersList.get(i).getInt("longitude");
+            } catch(Exception ex){
+                ex.printStackTrace();
+                return;
+            }
+            if ("bag".equals(type)) markerIcon = bagIcon;
+            else markerIcon = treeIcon;
+
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(lati, longi))
+                    .icon(BitmapDescriptorFactory.fromBitmap(markerIcon))
+                    .title(getAddress(lati, longi)));
         }
 
-        for (LatLng pos : treePositions)
-        {
-            Marker marker = mMap.addMarker(new MarkerOptions()
-                    .position(pos)
-                    .icon(BitmapDescriptorFactory.fromBitmap(treeIcon))
-                    .title(getAddress(pos.latitude, pos.longitude)));
-            treeMarkers.add(marker);
-        }
 
         if(mLocationPermissionsGranted){
             getLocation();

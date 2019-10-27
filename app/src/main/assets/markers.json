@@ -1,6 +1,6 @@
 {"markers":[
-  {"type":"bag","latitude":48.4, "longitude": -71.01},
-  {"type":"bag","latitude":48.5, "longitude": -71.01},
-  {"type":"tree","latitude":48.6, "longitude": -71.01},
+  {"type":"bag","latitude":10.4, "longitude": -71.01},
+  {"type":"bag","latitude":80.5, "longitude": -71.01},
+  {"type":"tree","latitude":50.6, "longitude": -71.01},
   {"type":"tree","latitude":48.7, "longitude": -71.01}
 ]}
