@@ -6,11 +6,13 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +23,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -42,7 +45,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private static final int ERROR_DIALOG_REQUEST = 9001;
-    private static final int DEFAULT_ZOOM = 15;
+    private static final int DEFAULT_ZOOM = 16;
     private static final String TAG = "MapsActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
@@ -55,6 +58,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     List<LatLng> bagPositions = new ArrayList<LatLng>();
     LatLng currentLocation;
 
+    LocationManager locationManager;
+    private Context context;
 
 
     @Override
@@ -78,6 +83,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -95,10 +101,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
 
-        //goToLocation(45,-73);
         if(mLocationPermissionsGranted){
-            SetCurrentLocation();
-            //currentLocation = new LatLng(10,10);
+            //SetCurrentLocation();
+            getLocation();
+            //Log.e("onLocationChanged",Double.toString(currentLocation.latitude));
+            //Log.e("onLocationChanged",Double.toString(currentLocation.longitude));
+            goToLocation(currentLocation.latitude, currentLocation.longitude);
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setCompassEnabled(true);
 
@@ -113,8 +121,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .icon(BitmapDescriptorFactory.fromBitmap(treeIcon));
             mMap.addMarker(options2);
         }
+    }
 
+    private void getLocation()
+    {
+        locationManager=(LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                                                        && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        } else
+        {
+            Location LocationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            Location LocationNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            Location LocationPassive = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+            if (LocationGPS != null)
+            {
+                currentLocation = new LatLng(LocationGPS.getLatitude(), LocationGPS.getLongitude());
+            }
+            else if (LocationNetwork != null)
+            {
+                currentLocation = new LatLng(LocationNetwork.getLatitude(), LocationNetwork.getLongitude());
+            } else if (LocationPassive != null)
+            {
+                currentLocation = new LatLng(LocationPassive.getLatitude(), LocationPassive.getLongitude());
+            } else {
+                Toast.makeText(MapsActivity.this, "Can't get current location !", Toast.LENGTH_SHORT).show();
 
+            }
+        }
     }
 
     @Override
@@ -157,7 +192,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if (task.isSuccessful()){
                             Log.d(TAG, "goToDeviceLocation : Success");
                             Location currLocation = (Location) task.getResult();
-                            goToLocation(currLocation.getLatitude(), currLocation.getLongitude());
                         } else {
                             Log.d(TAG, "goToDeviceLocation : can't find location");
                             Toast.makeText(MapsActivity.this, "Can't get current location !", Toast.LENGTH_SHORT).show();
