@@ -42,6 +42,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -60,13 +61,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private Boolean mLocationPermissionsGranted = false;
-    private FusedLocationProviderClient mFusedLocationprividerClient;
     Bitmap bagIcon;
     Bitmap treeIcon;
-    List<Marker> bagMarkers = new ArrayList<Marker>();
-    List<LatLng> bagPositions = new ArrayList<LatLng>();
-    List<Marker> treeMarkers = new ArrayList<Marker>();
-    List<LatLng> treePositions = new ArrayList<LatLng>();
     LatLng currentLocation;
     ArrayList<JSONObject> markersList;
 
@@ -90,8 +86,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         BitmapDrawable treeBitmap=(BitmapDrawable)getResources().getDrawable(R.drawable.arbre);
         treeIcon = Bitmap.createScaledBitmap(treeBitmap.getBitmap(), width, height, false);
-
-
     }
 
 
@@ -105,7 +99,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int lati;
         int longi;
         String type;
-        Bitmap markerIcon = bagIcon;
+        Bitmap markerIcon;
+
+        try{
+            JSONObject obj = new JSONObject();
+            obj.put("type", "bag");
+            obj.put("latitude", 20);
+            obj.put("longitude", 20);
+            markersList.add(obj);
+        } catch(Exception ex){
+            ex.printStackTrace();
+            return;
+        }
+
+
+
 
         for(int i = 0; i<markersList.size(); i++)
         {
