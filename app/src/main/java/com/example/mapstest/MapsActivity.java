@@ -12,6 +12,8 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -40,8 +42,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
@@ -151,6 +155,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    public String getAddress(double lat, double lng) {
+        Geocoder geocoder = new Geocoder(MapsActivity.this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+            Address obj = addresses.get(0);
+
+            String add = obj.getAddressLine(0);
+
+            return add;
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            return null;
+        }
+    }
+
     @Override
     public void onLocationChanged(Location location) {
         currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
@@ -225,7 +245,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 MarkerOptions options = new MarkerOptions()
                         .position(new LatLng(currentLocation.latitude, currentLocation.longitude))
-                        .title(markerTitle)
+                        .title(getAddress(currentLocation.latitude, currentLocation.longitude))
                         .icon(BitmapDescriptorFactory.fromBitmap(markerIcon));
                 mMap.addMarker(options);
             }
