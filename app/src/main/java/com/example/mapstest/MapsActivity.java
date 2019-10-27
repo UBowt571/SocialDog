@@ -201,9 +201,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void AddMarkerAtCurrentLocation(View view)
     {
         Log.e(TAG, "Hello there");
-
-        String[] markersTypes = {"Espace vert", "Sac à déjection"};
         getLocation();
+        String[] markersTypes = {"Espace vert", "Sac à déjection"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Quel type de lieu voulez-vous ajouter ?");
@@ -211,23 +210,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // the user clicked on markersTypes[which]
-                Bitmap icon;
+                Bitmap markerIcon;
                 String markerTitle;
                 switch(which){
                     case(0):
                     default:
-                        icon = treeIcon;
+                        markerIcon = treeIcon;
                         markerTitle = "Espace vert";
                         break;
                     case(1):
-                        icon = bagIcon;
+                        markerIcon = bagIcon;
                         markerTitle = "Sac à déjection";
                         break;
                 }
                 MarkerOptions options = new MarkerOptions()
                         .position(new LatLng(currentLocation.latitude, currentLocation.longitude))
-                        .title(markerTitle)
-                        .icon(BitmapDescriptorFactory.fromBitmap(icon));
+                        .title("L'univesité des boss")
+                        .icon(BitmapDescriptorFactory.fromBitmap(markerIcon));
                 mMap.addMarker(options);
             }
         });
