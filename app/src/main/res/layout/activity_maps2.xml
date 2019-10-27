@@ -19,9 +19,9 @@ android:gravity="center">
 
 <Button
     android:id="@+id/button"
+    android:text="Ajouter lieu"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Button"
     android:onClick="AddMarkerAtCurrentLocation"/>
 
 </LinearLayout>

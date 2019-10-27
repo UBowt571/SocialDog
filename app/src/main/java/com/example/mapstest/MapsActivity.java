@@ -117,7 +117,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         for(int i = 0; i<markersList.size(); i++)
         {
-            Log.e(TAG, Integer.toString(i));
             try{
                 type = markersList.get(i).getString("type");
                 lati = markersList.get(i).getInt("latitude");
