@@ -1,5 +1,7 @@
 package student.socialdog;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -8,6 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -19,30 +24,15 @@ public class MainFriendslist extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.friendslist_main, container, false);
         super.onCreate(savedInstanceState);
-        friendslist = new ArrayList<>();
 
-        friendslist.add(new FriendAdapter.FriendsObject("Marie Gagnon",
-                "Actuellement en promenade",R.drawable.mgagnon));
-        friendslist.add(new FriendAdapter.FriendsObject("Michel Tremblay",
-                "Dernière promenade il y a 5 jours.",R.drawable.mtremblay));
-        friendslist.add(new FriendAdapter.FriendsObject("Alice Martel",
-                "Dernière promenade il y a plus d'un mois.",R.drawable.amartel));
-        friendslist.add(new FriendAdapter.FriendsObject("Maxime Defrances",
-                "Dernière promenade il y a deux semaines.",R.drawable.mgagnon));
-        friendslist.add(new FriendAdapter.FriendsObject("Thomas Gabriel",
-                "Dernière promenade il y a plus d'un mois.",R.drawable.amartel));
-        friendslist.add(new FriendAdapter.FriendsObject("Anatole Martin",
-                "Dernière promenade il y a plus d'un mois.",R.drawable.mtremblay));
-        friendslist.add(new FriendAdapter.FriendsObject("Roger Gagnon",
-                "Dernière promenade il y a plus d'un mois.",R.drawable.mtremblay));
-        friendslist.add(new FriendAdapter.FriendsObject("Michèle Madre",
-                "Dernière promenade il y a plus d'un mois.",R.drawable.amartel));
-        friendslist.add(new FriendAdapter.FriendsObject("Yanis Vervet",
-                "Dernière promenade il y a plus d'un mois.",R.drawable.mgagnon));
+        // Récupération de la liste d'amis depuis JSON
+        JSONObject friendsjson = assetLoader.JSON(this.getContext(),"friends.json");
+        ArrayList<JSONObject> friendslistjson = assetLoader.getJSONArray(friendsjson,"friends");
+        friendslist = assetLoader.getFriends(this.getContext());
 
-RecyclerView recyclerView;
+        // Création du RecyclerView
+        RecyclerView recyclerView;
         try {
-            // Création du RecyclerView
             recyclerView = rootView.findViewById(R.id.RV_friends);
             recyclerView.setHasFixedSize(true);
         }catch (Exception ex){
@@ -58,6 +48,22 @@ RecyclerView recyclerView;
         // Spécification de FriendAdapter pour le recyclerview
         recyclerView.setAdapter(new FriendAdapter());
 
+        Button addFriend = rootView.findViewById(R.id.addFriend);
+
+        addFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startAddFriendActivity(v);
+            }
+        });
+
         return rootView;
     }
+
+    public void startAddFriendActivity(View v){
+        Intent intent = new Intent(this.getContext(), AddFriend.class);
+        startActivity(intent);
+
+    }
+
 }
