@@ -45,6 +45,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,12 +64,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private Boolean mLocationPermissionsGranted = false;
-    private FusedLocationProviderClient mFusedLocationprividerClient;
     Bitmap bagIcon;
     Bitmap treeIcon;
-    List<Marker> bagMarkers = new ArrayList<Marker>();
-    List<LatLng> bagPositions = new ArrayList<LatLng>();
     LatLng currentLocation;
+    ArrayList<JSONObject> markersList;
 
     LocationManager locationManager;
 
@@ -90,7 +91,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         treeIcon = Bitmap.createScaledBitmap(treeBitmap.getBitmap(), width, height, false);
 
         return rootView;
-
     }
 
 
@@ -98,18 +98,47 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        Toast.makeText(getContext(), "Map Is ready", Toast.LENGTH_SHORT).show();
+        JSONObject list_markers = assetLoader.JSON(getContext(),"markers.json");
+        markersList = assetLoader.getJSONArray(list_markers, "markers");
 
-        bagPositions.add(new LatLng(48.41919, -71.0549273));
+        int lati;
+        int longi;
+        String type;
+        Bitmap markerIcon;
 
-        for (LatLng pos : bagPositions)
-        {
-            Marker marker = mMap.addMarker(new MarkerOptions()
-                                                .position(pos)
-                                                .icon(BitmapDescriptorFactory.fromBitmap(bagIcon)));
-            bagMarkers.add(marker);
-
+        try{
+            JSONObject obj = new JSONObject();
+            obj.put("type", "bag");
+            obj.put("latitude", 20);
+            obj.put("longitude", 20);
+            markersList.add(obj);
+        } catch(Exception ex){
+            ex.printStackTrace();
+            return;
         }
+
+
+
+
+        for(int i = 0; i<markersList.size(); i++)
+        {
+            try{
+                type = markersList.get(i).getString("type");
+                lati = markersList.get(i).getInt("latitude");
+                longi = markersList.get(i).getInt("longitude");
+            } catch(Exception ex){
+                ex.printStackTrace();
+                return;
+            }
+            if ("bag".equals(type)) markerIcon = bagIcon;
+            else markerIcon = treeIcon;
+
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(lati, longi))
+                    .icon(BitmapDescriptorFactory.fromBitmap(markerIcon))
+                    .title(getAddress(lati, longi)));
+        }
+
 
         if(mLocationPermissionsGranted){
             getLocation();
@@ -117,16 +146,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setCompassEnabled(true);
 
-            /*MarkerOptions options = new MarkerOptions()
-                    .position(new LatLng(48.41919, -71.0549273))
-                    .title("L'univesité des boss")
-                    .icon(BitmapDescriptorFactory.fromBitmap(bagIcon));*/
-
-            MarkerOptions options2 = new MarkerOptions()
-                    .position(new LatLng(48.5, -71.0549273))
-                    .title("L'univesité des boss")
-                    .icon(BitmapDescriptorFactory.fromBitmap(treeIcon));
-            mMap.addMarker(options2);
         }
     }
 
@@ -134,7 +153,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     {
         locationManager=(LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                                                        && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
             ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         } else
@@ -203,10 +222,12 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
     private void initMap(){
         Log.d(TAG, "initMap: initializing map");
-        SupportMapFragment mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) this.getChildFragmentManager()
+                .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
     }
+
 
     private void goToLocation(double lat, double lng)
     {
@@ -261,9 +282,9 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         Log.d(TAG, "getLocationPermission: getting location permissions");
         String[] permissions = {FINE_LOCATION, COARSE_LOCATION};
 
-        if(ContextCompat.checkSelfPermission(getContext(),
+        if(ContextCompat.checkSelfPermission(this.getContext(),
                 FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            if(ContextCompat.checkSelfPermission(getContext(),
+            if(ContextCompat.checkSelfPermission(this.getContext(),
                     COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
                 mLocationPermissionsGranted = true;
                 initMap();
