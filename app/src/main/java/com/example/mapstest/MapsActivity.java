@@ -225,7 +225,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 MarkerOptions options = new MarkerOptions()
                         .position(new LatLng(currentLocation.latitude, currentLocation.longitude))
-                        .title("L'univesité des boss")
+                        .title(markerTitle)
                         .icon(BitmapDescriptorFactory.fromBitmap(markerIcon));
                 mMap.addMarker(options);
             }
