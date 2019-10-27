@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 import android.app.Dialog;
 
@@ -89,6 +90,16 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
         BitmapDrawable treeBitmap=(BitmapDrawable)getResources().getDrawable(R.drawable.arbre);
         treeIcon = Bitmap.createScaledBitmap(treeBitmap.getBitmap(), width, height, false);
+
+        Button addmarker = rootView.findViewById(R.id.addmarker);
+
+        addmarker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addMarkerAtCurrentLocation(v);
+            }
+        });
+
 
         return rootView;
     }
@@ -243,7 +254,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         mMap.moveCamera(CameraUpdateFactory.zoomTo(zoom));
     }
 
-    public void AddMarkerAtCurrentLocation(View view)
+    public void addMarkerAtCurrentLocation(View view)
     {
         Log.e(TAG, "Hello there");
         getLocation();
@@ -252,6 +263,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Quel type de lieu voulez-vous ajouter ?");
         builder.setItems(markersTypes, new DialogInterface.OnClickListener() {
+
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // the user clicked on markersTypes[which]
