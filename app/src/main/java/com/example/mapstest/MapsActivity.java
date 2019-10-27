@@ -1,12 +1,14 @@
 package com.example.mapstest;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -16,6 +18,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 import android.app.Dialog;
 
@@ -59,7 +62,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LatLng currentLocation;
 
     LocationManager locationManager;
-    private Context context;
 
 
     @Override
@@ -102,10 +104,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         if(mLocationPermissionsGranted){
-            //SetCurrentLocation();
             getLocation();
-            //Log.e("onLocationChanged",Double.toString(currentLocation.latitude));
-            //Log.e("onLocationChanged",Double.toString(currentLocation.longitude));
             goToLocation(currentLocation.latitude, currentLocation.longitude);
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setCompassEnabled(true);
@@ -178,34 +177,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    private void SetCurrentLocation()
-    {
-        Log.d(TAG, "goToDeviceLocation");
-
-        mFusedLocationprividerClient = LocationServices.getFusedLocationProviderClient(this);
-        try{
-            if (mLocationPermissionsGranted){
-                Task location = mFusedLocationprividerClient.getLastLocation();
-                location.addOnCompleteListener(new OnCompleteListener() {
-                    @Override
-                    public void onComplete(@NonNull Task task) {
-                        if (task.isSuccessful()){
-                            Log.d(TAG, "goToDeviceLocation : Success");
-                            Location currLocation = (Location) task.getResult();
-                        } else {
-                            Log.d(TAG, "goToDeviceLocation : can't find location");
-                            Toast.makeText(MapsActivity.this, "Can't get current location !", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-            }
-        }catch (SecurityException e){
-            Log.e(TAG, "goToDeviceLocation : SecurityException " + e.getMessage());
-        }
-    }
-
-
-
     private void initMap(){
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -225,6 +196,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng position = new LatLng(lat, lng);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
         mMap.moveCamera(CameraUpdateFactory.zoomTo(zoom));
+    }
+
+    public void AddMarkerAtCurrentLocation(View view)
+    {
+        Log.e(TAG, "Hello there");
+
+        String[] markersTypes = {"Espace vert", "Sac à déjection"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Pick a color");
+        builder.setItems(markersTypes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // the user clicked on markersTypes[which]
+                Bitmap icon;
+                switch(which){
+                    case(0):
+                    default:
+                        icon = treeIcon;
+                        break;
+                    case(1):
+                        icon = bagIcon;
+                        break;
+                }
+                MarkerOptions options = new MarkerOptions()
+                        .position(new LatLng(currentLocation.latitude, currentLocation.longitude))
+                        .title("L'univesité des boss")
+                        .icon(BitmapDescriptorFactory.fromBitmap(icon));
+                mMap.addMarker(options);
+            }
+        });
+        builder.show();
     }
 
     private void getLocationPermission(){
