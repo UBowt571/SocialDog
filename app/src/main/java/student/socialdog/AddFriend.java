@@ -1,5 +1,6 @@
 package student.socialdog;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -29,7 +30,10 @@ public class AddFriend extends AppCompatActivity {
         EditText lastname = findViewById(R.id.lastnamefield);
         String name = firstname.getText()+" "+lastname.getText();
         MainFriendslist.friendslist.add(new FriendAdapter.FriendsObject(name,"Non actualisé",R.drawable.mgagnon));
-        
+
+        Intent friendadded = new Intent();
+        friendadded.setAction("com.example.Broadcast");
+        sendBroadcast(friendadded);
         finish();
 
     }

@@ -1,19 +1,14 @@
 package student.socialdog;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 
 public class MainFriendslist extends Fragment {
@@ -26,8 +21,6 @@ public class MainFriendslist extends Fragment {
         super.onCreate(savedInstanceState);
 
         // Récupération de la liste d'amis depuis JSON
-        JSONObject friendsjson = assetLoader.JSON(this.getContext(),"friends.json");
-        ArrayList<JSONObject> friendslistjson = assetLoader.getJSONArray(friendsjson,"friends");
         friendslist = assetLoader.getFriends(this.getContext());
 
         // Création du RecyclerView
@@ -53,16 +46,17 @@ public class MainFriendslist extends Fragment {
         addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startAddFriendActivity(v);
+                startAddFriendActivity();
             }
         });
 
         return rootView;
     }
 
-    public void startAddFriendActivity(View v){
+    private void startAddFriendActivity(){
         Intent intent = new Intent(this.getContext(), AddFriend.class);
         startActivity(intent);
+        int test=0;
 
     }
 
