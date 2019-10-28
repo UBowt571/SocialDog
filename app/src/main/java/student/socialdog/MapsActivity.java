@@ -99,7 +99,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                 addMarkerAtCurrentLocation(v);
             }
         });
-
+        JSONObject list_markers = assetLoader.JSON(getContext(),"markers.json");
+        markersList = assetLoader.getJSONArray(list_markers, "markers");
 
         return rootView;
     }
@@ -108,12 +109,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        Log.e(TAG, "onMapReady: "+markersList.toString());
 
-        JSONObject list_markers = assetLoader.JSON(getContext(),"markers.json");
-        markersList = assetLoader.getJSONArray(list_markers, "markers");
-
-        int lati;
-        int longi;
+        double lati;
+        double longi;
         String type;
         Bitmap markerIcon;
 
@@ -135,8 +134,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         {
             try{
                 type = markersList.get(i).getString("type");
-                lati = markersList.get(i).getInt("latitude");
-                longi = markersList.get(i).getInt("longitude");
+                lati = markersList.get(i).getDouble("latitude");
+                longi = markersList.get(i).getDouble("longitude");
             } catch(Exception ex){
                 ex.printStackTrace();
                 return;
