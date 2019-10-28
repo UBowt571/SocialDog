@@ -53,6 +53,10 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         setupDrawerToggle();
 
+        Fragment fragment = new MapsActivity();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
@@ -70,10 +74,10 @@ public class MainActivity extends AppCompatActivity {
 
         switch (position) {
             case 0:
-                fragment = new ConnectFragment();
+                fragment = new MapsActivity();
                 break;
             case 1:
-                fragment = new FixturesFragment();
+                fragment = new MapsActivity();
                 break;
             case 2:
                 fragment = new MainFriendslist();
