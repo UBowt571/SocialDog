@@ -1,10 +1,12 @@
 package student.socialdog;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
 
@@ -54,7 +56,21 @@ public class MainDogslist extends Fragment {
 
         // Spécification de DogAdapter pour le recyclerview
         recyclerView.setAdapter(new DogAdapter());
+
+        Button addDog = rootView.findViewById(R.id.addDog);
+
+        addDog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startAddDogActivity();
+            }
+        });
         
         return rootView;
+    }
+
+    private void startAddDogActivity(){
+        Intent intent = new Intent(this.getContext(), AddDog.class);
+        startActivity(intent);
     }
 }
