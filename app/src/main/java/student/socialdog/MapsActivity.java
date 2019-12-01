@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
@@ -43,6 +44,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -69,8 +72,15 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     Bitmap treeIcon;
     LatLng currentLocation;
     ArrayList<JSONObject> markersList;
+    ArrayList<LatLng> pathList;
+    Polyline pathPolyline;
+    Marker startMarker;
 
     LocationManager locationManager;
+
+    LatLng test1 = new LatLng(0,0);
+    LatLng test2 = new LatLng(0,20);
+    LatLng test3 = new LatLng(20,20);
 
 
     @Override
@@ -127,9 +137,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             return;
         }
 
-
-
-
         for(int i = 0; i<markersList.size(); i++)
         {
             try{
@@ -148,8 +155,11 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                     .icon(BitmapDescriptorFactory.fromBitmap(markerIcon))
                     .title(getAddress(lati, longi)));
         }
-
-
+        pathList = new ArrayList<>();
+        pathList.add(test1);
+        pathList.add(test2);
+        pathList.add(test3);
+        drawPath(pathList);
         if(mLocationPermissionsGranted){
             getLocation();
             goToLocation(currentLocation.latitude, currentLocation.longitude);
@@ -157,6 +167,30 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             mMap.getUiSettings().setCompassEnabled(true);
 
         }
+    }
+
+
+
+    private void drawPath(ArrayList<LatLng> pointList) {
+        if (pathPolyline != null) pathPolyline.remove(); //Reset the polyline
+        if (startMarker != null) startMarker.remove();
+
+        PolylineOptions polylineOptions = new PolylineOptions();
+        for (int i = 0; i < pointList.size(); i = i + 1) {
+            polylineOptions.add(new LatLng(pointList.get(i).latitude,
+                    pointList.get(i).longitude));
+        }
+
+        LatLng startLatLng = new LatLng(pointList.get(0).latitude, pointList.get(0).longitude);
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(startLatLng);
+        markerOptions.title("Start Position");
+        startMarker = mMap.addMarker(markerOptions);
+
+        polylineOptions.color(Color.BLUE);
+        polylineOptions.width(10);
+        polylineOptions.geodesic(false);
+        pathPolyline = mMap.addPolyline(polylineOptions);
     }
 
     private void getLocation()
