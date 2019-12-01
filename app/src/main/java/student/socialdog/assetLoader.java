@@ -2,11 +2,11 @@ package student.socialdog;
 
 import android.content.Context;
 import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class assetLoader {
     private static Context mContext = null;
@@ -59,8 +59,8 @@ public class assetLoader {
      * Returns an ArrayList of FriendAdapter.FriendsObject
      * @return ArrayList<FriendAdapter.FriendsObject> Return a list of FriendAdapter.FriendsObject
      */
-    public static ArrayList<FriendAdapter.FriendsObject> getFriends(){
-        return getFriends(mContext);
+    public static ArrayList<FriendAdapter.FriendsObject> getFriends(ArrayList<HashMap> friendsInDB){
+        return getFriends(mContext,friendsInDB);
     }
 
     /**
@@ -68,27 +68,21 @@ public class assetLoader {
      * @param pcontext Context to use to load JSON file. Might be usefull if mContext from assetLoader isn't initialized yet
      * @return ArrayList<FriendAdapter.FriendsObject> Return a list of FriendAdapter.FriendsObject
      */
-    public static ArrayList<FriendAdapter.FriendsObject> getFriends(Context pcontext){
-        JSONObject jsonObject;
-        if(pcontext!=null){
-            jsonObject = assetLoader.JSON(assetLoader.mContext,"friends.json");
-        }else{
-            Log.e("assetLoader","Context isn't loaded yet, assetLoader.JSON or getResIDfromImageName(String imageName,Context context) to load context !");
-            return null;
-        }
-        ArrayList<FriendAdapter.FriendsObject> friends = new ArrayList<>();
-        try{
-            JSONArray jsonArrayFriends = jsonObject.getJSONArray("friends");
-            for (int i = 0; i < jsonArrayFriends.length();i++){
-                JSONObject currentFriend = jsonArrayFriends.getJSONObject(i);
-                int imgResID = getResIDfromImageName(currentFriend.getString("ppic"),pcontext);
-                friends.add(new FriendAdapter.FriendsObject(currentFriend.getString("name"),currentFriend.getString("lastWalk"),imgResID));
+
+    public static ArrayList<FriendAdapter.FriendsObject> getFriends(Context pcontext,ArrayList<HashMap> friendsInDB) {
+        ArrayList<FriendAdapter.FriendsObject> friendslist = new ArrayList<>();
+        for(int i=0; i<friendsInDB.size(); i++) {
+            try{
+                Object lastWalk = friendsInDB.get(i).get("lastWalk");
+                Object name = friendsInDB.get(i).get("name");
+                Object ppic = friendsInDB.get(i).get("ppic");
+                int imgResID = getResIDfromImageName(ppic.toString(),pcontext);
+                friendslist.add(new FriendAdapter.FriendsObject((String) name,(String) lastWalk, imgResID));
+            } catch(Exception ex){
+                ex.printStackTrace();
             }
-            return friends;
-        }catch(Exception ex){
-            ex.printStackTrace();
-            return null;
         }
+        return friendslist;
     }
 
     /**
@@ -96,7 +90,7 @@ public class assetLoader {
      * @param imageName Name of the image ressource to load.
      * @return int Return the ressource ID of image named "imageName" as an "int"
      */
-    private static int getResIDfromImageName(String imageName){
+    public static int getResIDfromImageName(String imageName){
         int result = getResIDfromImageName(imageName,mContext);
         if(result == -1){
             Log.e("assetLoader","Context isn't loaded yet, assetLoader.JSON or getResIDfromImageName(String imageName,Context context) to load context !");

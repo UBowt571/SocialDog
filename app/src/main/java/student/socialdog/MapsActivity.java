@@ -107,17 +107,15 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Read from the database
+        // Lecture des marqueurs depuis database FireBase
         markersDB.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ArrayList<HashMap> markers =  (ArrayList<HashMap>)dataSnapshot.getValue();
-
                 Bitmap markerIcon;
                 Object lati;
                 Object longi;
                 Object type;
-
                 for(int i=0; i<markers.size(); i++)
                 {
                     try{
@@ -134,7 +132,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                     else{
                         markerIcon = treeIcon;
                     }
-
                     mMap.addMarker(new MarkerOptions()
                             .position(new LatLng((Double)lati, (Double) longi))
                             .icon(BitmapDescriptorFactory.fromBitmap(markerIcon))
@@ -144,9 +141,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                // Getting Post failed, log a message
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                // ...
             }
         });
 
