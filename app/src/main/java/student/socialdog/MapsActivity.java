@@ -79,6 +79,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     Polyline pathPolyline;
     Marker startMarker;
     boolean isWalking;
+    final Handler walkHandler = new Handler();
+    final int walkUpdateDelay = 1000; //milliseconds
 
     LocationManager locationManager;
 
@@ -105,16 +107,33 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         BitmapDrawable treeBitmap=(BitmapDrawable)getResources().getDrawable(R.drawable.arbre);
         treeIcon = Bitmap.createScaledBitmap(treeBitmap.getBitmap(), width, height, false);
 
-        Button addmarker = rootView.findViewById(R.id.addmarker);
-        Button startWalk = rootView.findViewById(R.id.startWalk);
-        Button endWalk = rootView.findViewById(R.id.endWalk);
+        Button addMarkerButton = rootView.findViewById(R.id.addmarker);
+        Button startWalkButton = rootView.findViewById(R.id.startWalk);
+        Button endWalkButton = rootView.findViewById(R.id.endWalk);
 
-        addmarker.setOnClickListener(new View.OnClickListener() {
+        addMarkerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addMarkerAtCurrentLocation(v);
             }
         });
+
+        startWalkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startWalk();
+            }
+        });
+
+        endWalkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                endWalk();
+            }
+        });
+
+
+
         JSONObject list_markers = assetLoader.JSON(getContext(),"markers.json");
         markersList = assetLoader.getJSONArray(list_markers, "markers");
 
@@ -162,9 +181,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                     .title(getAddress(lati, longi)));
         }
         pathList = new ArrayList<>();
-        pathList.add(test1);
-        pathList.add(test2);
-        pathList.add(test3);
 
         if(mLocationPermissionsGranted){
             getLocation();
@@ -173,16 +189,31 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             mMap.getUiSettings().setCompassEnabled(true);
         }
 
-        final Handler handler = new Handler();
-        final int delay = 1000; //milliseconds
+    }
 
-        handler.postDelayed(new Runnable(){
-            public void run(){
-                addLocationToPath();
-                drawPath(pathList);
-                handler.postDelayed(this, delay);
-            }
-        }, delay);
+    void startWalk()
+    {
+        if (!isWalking)
+        {
+            pathList.clear();
+            isWalking = true;
+            walkHandler.postDelayed(new Runnable(){
+                public void run(){
+                    addLocationToPath();
+                    drawPath(pathList);
+                    walkHandler.postDelayed(this, walkUpdateDelay);
+                }
+            }, walkUpdateDelay);
+        }
+    }
+
+    void endWalk()
+    {
+        if(isWalking)
+        {
+            isWalking = false;
+            walkHandler.removeCallbacksAndMessages(null);
+        }
     }
 
 
