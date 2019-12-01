@@ -21,6 +21,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,6 +57,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MapsActivity extends Fragment implements OnMapReadyCallback, LocationListener {
@@ -75,6 +78,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     ArrayList<LatLng> pathList;
     Polyline pathPolyline;
     Marker startMarker;
+    boolean isWalking;
 
     LocationManager locationManager;
 
@@ -102,6 +106,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         treeIcon = Bitmap.createScaledBitmap(treeBitmap.getBitmap(), width, height, false);
 
         Button addmarker = rootView.findViewById(R.id.addmarker);
+        Button startWalk = rootView.findViewById(R.id.startWalk);
+        Button endWalk = rootView.findViewById(R.id.endWalk);
 
         addmarker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -159,14 +165,24 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         pathList.add(test1);
         pathList.add(test2);
         pathList.add(test3);
-        drawPath(pathList);
+
         if(mLocationPermissionsGranted){
             getLocation();
             goToLocation(currentLocation.latitude, currentLocation.longitude);
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setCompassEnabled(true);
-
         }
+
+        final Handler handler = new Handler();
+        final int delay = 1000; //milliseconds
+
+        handler.postDelayed(new Runnable(){
+            public void run(){
+                addLocationToPath();
+                drawPath(pathList);
+                handler.postDelayed(this, delay);
+            }
+        }, delay);
     }
 
 
@@ -191,6 +207,13 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         polylineOptions.width(10);
         polylineOptions.geodesic(false);
         pathPolyline = mMap.addPolyline(polylineOptions);
+    }
+
+    //Add current location to the path list
+    private void addLocationToPath()
+    {
+        getLocation();
+        pathList.add(currentLocation);
     }
 
     private void getLocation()
