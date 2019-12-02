@@ -150,7 +150,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             goToLocation(currentLocation.latitude, currentLocation.longitude);
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setCompassEnabled(true);
-
         }
     }
 

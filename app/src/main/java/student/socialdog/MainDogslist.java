@@ -1,71 +1,77 @@
 package student.socialdog;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
 import androidx.fragment.app.Fragment;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class MainDogslist extends Fragment {
 
-    public static ArrayList<DogAdapter.DogObject> dogslist;
+    static ArrayList<DogAdapter.DogObject> dogslist = new ArrayList<>();
+    DatabaseReference dogsDB;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         
-        View rootView = inflater.inflate(R.layout.dogslist_main, container, false);
-        super.onCreate(savedInstanceState);
-        dogslist = new ArrayList<>();
+        final View rootView = inflater.inflate(R.layout.dogslist_main, container, false);
 
-        int color1 = Color.argb(100, 0,97,0);
-        int color2 = Color.argb(100, 97,0,0);
-        int color3 = Color.argb(100, 0,0,75);
-        int color4 = Color.argb(100, 179,107,0);
-        
-        dogslist.add(new DogAdapter.DogObject("Rex",
-                "Shiba Inu","1 an", "Dernière promenade hier.", color1, R.drawable.dog1));
-        dogslist.add(new DogAdapter.DogObject("Buzz",
-                "Caniche","1 an et demi", "Dernière promenade hier.", color2, R.drawable.dog2));
-        dogslist.add(new DogAdapter.DogObject("Rantanplan",
-                "Corniaud","2 ans", "Dernière promenade il y a 3 jours.", color3, R.drawable.dog3));
-        dogslist.add(new DogAdapter.DogObject("Saucisse",
-                "Teckel","3 ans", "Dernière promenade il y a 3 jours.", color4, R.drawable.dog3));
+        // Déclaration chemin Firebase
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        dogsDB = database.getReference("dogs");
 
-        RecyclerView recyclerView;
-        try {
-            // Création du RecyclerView
-            recyclerView = rootView.findViewById(R.id.RV_dogs);
-            recyclerView.setHasFixedSize(true);
-        }catch (Exception ex){
-            ex.printStackTrace();
-            return null;
-        }
+        // Listener : on attend les données de Firebase PUIS on créé le recyclerView
+        dogsDB.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Récupération des chiens dans la database FireBase
+                ArrayList<HashMap> dogsInDB = (ArrayList<HashMap>) dataSnapshot.getValue();
+                dogslist = assetLoader.getDogs(dogsInDB);
 
-        //Création du linearLayout vertical et association au recyclerView
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(layoutManager);
+                // Création du recyclerView
+                RecyclerView recyclerView;
+                try {
+                    recyclerView = rootView.findViewById(R.id.RV_dogs);
+                    recyclerView.setHasFixedSize(true);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                //Création du linearLayout vertical et association au recyclerView
+                LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+                recyclerView = rootView.findViewById(R.id.RV_dogs);
+                recyclerView.setLayoutManager(layoutManager);
+                // Spécification de DogAdapter pour le recyclerview
+                recyclerView.setAdapter(new DogAdapter());
 
-        // Spécification de DogAdapter pour le recyclerview
-        recyclerView.setAdapter(new DogAdapter());
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        });
 
         Button addDog = rootView.findViewById(R.id.addDog);
-
         addDog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startAddDogActivity();
             }
         });
-        
+        super.onCreate(savedInstanceState);
         return rootView;
     }
 

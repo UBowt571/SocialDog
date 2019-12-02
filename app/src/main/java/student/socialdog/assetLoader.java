@@ -1,6 +1,8 @@
 package student.socialdog;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -111,4 +113,40 @@ public class assetLoader {
         Log.e("assetLoader","Context parameter isn't correct.");
         return -1;
     }
+
+
+    /**
+     * Returns an ArrayList of FriendAdapter.FriendsObject
+     * @return ArrayList<FriendAdapter.FriendsObject> Return a list of FriendAdapter.FriendsObject
+     */
+    public static ArrayList<DogAdapter.DogObject> getDogs(ArrayList<HashMap> dogsInDB){
+        return getDogs(mContext,dogsInDB);
+    }
+
+    /**
+     * Returns an ArrayList of FriendAdapter.FriendsObject
+     * @param pcontext Context to use to load JSON file. Might be usefull if mContext from assetLoader isn't initialized yet
+     * @return ArrayList<FriendAdapter.FriendsObject> Return a list of FriendAdapter.FriendsObject
+     */
+
+    public static ArrayList<DogAdapter.DogObject> getDogs(Context pcontext,ArrayList<HashMap> dogsInDB) {
+        ArrayList<DogAdapter.DogObject> dogslist = new ArrayList<>();
+        for(int i=0; i<dogsInDB.size(); i++) {
+            try{
+                Object dogname = dogsInDB.get(i).get("dogname");
+                Object dograce = dogsInDB.get(i).get("dograce");
+                Object dogage = dogsInDB.get(i).get("dogage");
+                Object lastWalk = dogsInDB.get(i).get("lastWalk");
+                Object dogcolor = dogsInDB.get(i).get("dogcolor");
+                int idogcolor = Integer.parseInt(dogcolor.toString());
+                Object dogpic = dogsInDB.get(i).get("dogpic");
+                int imgResID = getResIDfromImageName(dogpic.toString(),pcontext);
+                dogslist.add(new DogAdapter.DogObject((String) dogname,(String) dograce,(String) dogage,(String) lastWalk, idogcolor,imgResID));
+            } catch(Exception ex){
+                ex.printStackTrace();
+            }
+        }
+        return dogslist;
+    }
+
 }
