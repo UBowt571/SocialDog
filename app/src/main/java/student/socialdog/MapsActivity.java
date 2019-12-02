@@ -84,11 +84,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
     LocationManager locationManager;
 
-    LatLng test1 = new LatLng(0,0);
-    LatLng test2 = new LatLng(0,20);
-    LatLng test3 = new LatLng(20,20);
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.activity_maps2, container, false);
@@ -217,7 +212,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     }
 
 
-
+    //Draw a path from an array of latlng
     private void drawPath(ArrayList<LatLng> pointList) {
         if (pathPolyline != null) pathPolyline.remove(); //Reset the polyline
         if (startMarker != null) startMarker.remove();
