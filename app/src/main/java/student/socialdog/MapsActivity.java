@@ -5,7 +5,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.Context;
@@ -19,7 +18,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -32,29 +30,28 @@ import android.app.Dialog;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
@@ -82,6 +79,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     final Handler walkHandler = new Handler();
     final int walkUpdateDelay = 1000; //milliseconds
 
+    DatabaseReference markersDB;
     LocationManager locationManager;
 
     @Override
@@ -105,6 +103,9 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         Button addMarkerButton = rootView.findViewById(R.id.addmarker);
         Button startWalkButton = rootView.findViewById(R.id.startWalk);
         Button endWalkButton = rootView.findViewById(R.id.endWalk);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        markersDB = database.getReference("markers");
+
 
         addMarkerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,8 +128,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             }
         });
 
-
-
         JSONObject list_markers = assetLoader.JSON(getContext(),"markers.json");
         markersList = assetLoader.getJSONArray(list_markers, "markers");
 
@@ -139,43 +138,44 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        Log.e(TAG, "onMapReady: "+markersList.toString());
-
-        double lati;
-        double longi;
-        String type;
-        Bitmap markerIcon;
-
-        try{
-            JSONObject obj = new JSONObject();
-            obj.put("type", "bag");
-            obj.put("latitude", 20);
-            obj.put("longitude", 20);
-            markersList.add(obj);
-        } catch(Exception ex){
-            ex.printStackTrace();
-            return;
-        }
-
-        for(int i = 0; i<markersList.size(); i++)
-        {
-            try{
-                type = markersList.get(i).getString("type");
-                lati = markersList.get(i).getDouble("latitude");
-                longi = markersList.get(i).getDouble("longitude");
-            } catch(Exception ex){
-                ex.printStackTrace();
-                return;
+        
+        // Lecture des marqueurs depuis database FireBase
+        markersDB.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<HashMap> markers =  (ArrayList<HashMap>)dataSnapshot.getValue();
+                Bitmap markerIcon;
+                Object lati;
+                Object longi;
+                Object type;
+                for(int i=0; i<markers.size(); i++)
+                {
+                    try{
+                        type = markers.get(i).get("type");
+                        lati = markers.get(i).get("latitude");
+                        longi = markers.get(i).get("longitude");
+                    } catch(Exception ex){
+                        ex.printStackTrace();
+                        return;
+                    }
+                    if ("bag".equals(type)){
+                        markerIcon = bagIcon;
+                    }
+                    else{
+                        markerIcon = treeIcon;
+                    }
+                    mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng((Double)lati, (Double) longi))
+                            .icon(BitmapDescriptorFactory.fromBitmap(markerIcon))
+                            .title(getAddress((Double)lati, (Double) longi)));
+                }
             }
-            if ("bag".equals(type)) markerIcon = bagIcon;
-            else markerIcon = treeIcon;
 
-            mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(lati, longi))
-                    .icon(BitmapDescriptorFactory.fromBitmap(markerIcon))
-                    .title(getAddress(lati, longi)));
-        }
-        pathList = new ArrayList<>();
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        });
 
         if(mLocationPermissionsGranted){
             getLocation();
@@ -338,7 +338,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
     public void addMarkerAtCurrentLocation(View view)
     {
-        Log.e(TAG, "Hello there");
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        //DatabaseReference myRef = database.getReference("message");
+        //myRef.setValue("Hello, World!");
+
         getLocation();
         String[] markersTypes = {"Espace vert", "Sac à déjection"};
 
