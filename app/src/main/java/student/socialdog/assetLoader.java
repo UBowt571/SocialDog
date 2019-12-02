@@ -116,17 +116,17 @@ public class assetLoader {
 
 
     /**
-     * Returns an ArrayList of FriendAdapter.FriendsObject
-     * @return ArrayList<FriendAdapter.FriendsObject> Return a list of FriendAdapter.FriendsObject
+     * Returns an ArrayList of DogAdapter.DogObject
+     * @return ArrayList<DogAdapter.DogObject> Return a list of DogAdapter.DogObject
      */
     public static ArrayList<DogAdapter.DogObject> getDogs(ArrayList<HashMap> dogsInDB){
         return getDogs(mContext,dogsInDB);
     }
 
     /**
-     * Returns an ArrayList of FriendAdapter.FriendsObject
+     * Returns an ArrayList of DogAdapter.DogObject
      * @param pcontext Context to use to load JSON file. Might be usefull if mContext from assetLoader isn't initialized yet
-     * @return ArrayList<FriendAdapter.FriendsObject> Return a list of FriendAdapter.FriendsObject
+     * @return ArrayList<DogAdapter.DogObject> Return a list of DogAdapter.DogObject
      */
 
     public static ArrayList<DogAdapter.DogObject> getDogs(Context pcontext,ArrayList<HashMap> dogsInDB) {
