@@ -17,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
@@ -39,7 +40,7 @@ public class MainDogslist extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Récupération des chiens dans la database FireBase
-                ArrayList<HashMap> dogsInDB = (ArrayList<HashMap>) dataSnapshot.getValue();
+                HashMap<String,Map> dogsInDB = (HashMap<String,Map>) dataSnapshot.getValue();
                 dogslist = assetLoader.getDogs(dogsInDB);
 
                 // Création du recyclerView
