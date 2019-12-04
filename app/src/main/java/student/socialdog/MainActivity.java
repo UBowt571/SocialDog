@@ -77,7 +77,8 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new MapsActivity();
                 break;
             case 1:
-                fragment = new MapsActivity();
+                //fragment = new MapsActivity();
+                fragment = new PathsHistoryMaps(); //TEMPORARY
                 break;
             case 2:
                 fragment = new MainFriendslist();

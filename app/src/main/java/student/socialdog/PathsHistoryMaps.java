@@ -60,12 +60,12 @@ import java.util.TimerTask;
 import java.util.Map;
 
 
-public class MapsActivity extends Fragment implements OnMapReadyCallback, LocationListener {
+public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, LocationListener {
 
     private GoogleMap mMap;
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final int DEFAULT_ZOOM = 14;
-    private static final String TAG = "MapsActivity";
+    private static final String TAG = "PathsHistoryMaps";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
@@ -89,7 +89,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_maps2, container, false);
+        View rootView = inflater.inflate(R.layout.activity_paths_history_maps, container, false);
         super.onCreate(savedInstanceState);
         if(isServicesOK()){
             getLocationPermission();
@@ -106,8 +106,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         treeIcon = Bitmap.createScaledBitmap(treeBitmap.getBitmap(), width, height, false);
 
         Button addMarkerButton = rootView.findViewById(R.id.addmarker);
-        Button startWalkButton = rootView.findViewById(R.id.startWalk);
-        Button endWalkButton = rootView.findViewById(R.id.endWalk);
+        Button startWalkButton = rootView.findViewById(R.id.nextWalk);
+        Button endWalkButton = rootView.findViewById(R.id.previousWalk);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         markersDB = database.getReference("markers");
         pathsDB = database.getReference("paths");
@@ -564,8 +564,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                 {
                     for(Map.Entry<String, Map> current2 : markers_trunc2.entrySet()){
                         if(current.getValue().get("longitude") == current2.getValue().get("longitude")
-                        && current.getValue().get("latitude") == current2.getValue().get("latitude")
-                        && current.getValue().get("type") == current2.getValue().get("type")){
+                                && current.getValue().get("latitude") == current2.getValue().get("latitude")
+                                && current.getValue().get("type") == current2.getValue().get("type")){
                             // Moyenne des longitudes et latitudes retenues
                             double lati = ((double) current.getValue().get("latitude") + (double) current2.getValue().get("latitude"))/2;
                             double longi = ((double) current.getValue().get("longitude") + (double) current2.getValue().get("longitude"))/2;

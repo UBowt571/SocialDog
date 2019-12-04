@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SocialDog</string>
+    <string name="title_activity_paths_history_maps">PathsMaps</string>
 </resources>

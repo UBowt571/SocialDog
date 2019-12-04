@@ -15,7 +15,7 @@ android:gravity="center">
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        tools:context=".MapsActivity" />
+        tools:context=".PathsHistoryMaps" />
 
     <Button
         android:id="@+id/addmarker"
@@ -23,14 +23,14 @@ android:gravity="center">
         android:layout_height="wrap_content"
         android:text="Ajouter lieu"/>
     <Button
-        android:id="@+id/startWalk"
+        android:id="@+id/nextWalk"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Démarrer balade"/>
+        android:text="Balade Suivante"/>
     <Button
-        android:id="@+id/endWalk"
+        android:id="@+id/previousWalk"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Stopper balade"/>
+        android:text="Balade precedente"/>
 
-</LinearLayout>
+    </LinearLayout>
