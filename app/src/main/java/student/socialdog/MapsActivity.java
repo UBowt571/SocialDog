@@ -36,6 +36,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -74,12 +75,14 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     ArrayList<JSONObject> markersList;
     ArrayList<LatLng> pathList;
     Polyline pathPolyline;
+    ArrayList<ArrayList<LatLng>> allPathsList;
     Marker startMarker;
     boolean isWalking;
     final Handler walkHandler = new Handler();
-    final int walkUpdateDelay = 1000; //milliseconds
+    final int walkUpdateDelay = 5000; //milliseconds
 
     DatabaseReference markersDB;
+    DatabaseReference pathsDB;
     LocationManager locationManager;
 
     @Override
@@ -105,6 +108,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         Button endWalkButton = rootView.findViewById(R.id.endWalk);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         markersDB = database.getReference("markers");
+        pathsDB = database.getReference("paths");
 
 
         addMarkerButton.setOnClickListener(new View.OnClickListener() {
@@ -138,7 +142,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        
+        pathList = new ArrayList<>();
+        allPathsList = new ArrayList<>();
         // Lecture des marqueurs depuis database FireBase
         markersDB.addValueEventListener(new ValueEventListener() {
             @Override
@@ -176,6 +181,38 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             }
         });
+
+        pathsDB.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAA");
+                ArrayList<HashMap> paths = (ArrayList<HashMap>)dataSnapshot.getValue();
+                Object lat;
+                Object lng;
+                HashMap test;
+                pathList.clear();
+                allPathsList.clear();
+                for(int k = 0; k<paths.size(); k++)
+                {
+                    for(int i = 0; i<paths.get(k).size(); i++)
+                    {
+                        lat = paths.get(0).get("point" + i + "/latitude");
+                        lng = paths.get(0).get("point" + i + "/longitude");
+                        pathList.add(new LatLng((Double)lat,(Double) lng));
+                        Log.e(TAG, Double.toString(pathList.get(i).latitude));
+                    }
+                    allPathsList.add(pathList);
+                    pathList.clear();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        });
+
+        drawPath(allPathsList.get(0));
 
         if(mLocationPermissionsGranted){
             getLocation();
