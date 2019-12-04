@@ -1,4 +1,4 @@
-package student.socialdog;
+package student.socialdog.friends;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import student.socialdog.R;
 
 public class AddFriend extends AppCompatActivity {
 

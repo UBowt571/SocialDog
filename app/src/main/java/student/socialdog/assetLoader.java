@@ -6,7 +6,10 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+
+import student.socialdog.friends.FriendAdapter;
 
 public class assetLoader {
     private static Context mContext = null;
@@ -18,7 +21,7 @@ public class assetLoader {
      * @return JSONObject Return a JSONObject representation of the JSON file
      */
     public static JSONObject JSON(Context context,String filename) {
-        String jsonString = null;
+        String jsonString;
         try {
             InputStream is = context.getAssets().open(filename);
             mContext = context;
@@ -26,7 +29,7 @@ public class assetLoader {
             byte[] buffer = new byte[size];
             is.read(buffer);
             is.close();
-            jsonString = new String(buffer, "UTF-8");
+            jsonString = new String(buffer, StandardCharsets.UTF_8);
             return new JSONObject(jsonString);
         } catch (Exception ex) {
             ex.printStackTrace();

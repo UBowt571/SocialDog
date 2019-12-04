@@ -1,4 +1,4 @@
-package student.socialdog;
+package student.socialdog.dogs;
 
 import android.app.AlertDialog;
 import android.graphics.Color;
@@ -8,12 +8,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 
-import static student.socialdog.R.color.*;
+import student.socialdog.R;
 
 public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
     private ArrayList<DogObject> dogslisted = MainDogslist.dogslist;
@@ -24,6 +26,7 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
         return friendslistedtest.size();
     }
 
+    @NonNull
     @Override
     public DogViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -48,7 +51,7 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
         private final ImageView profilepic;
         private final LinearLayout color;
 
-        public DogObject currentdog = new DogObject("","","1 an", "",Color.WHITE, 0);
+        DogObject currentdog = new DogObject("","","1 an", "",Color.WHITE, 0);
 
         DogViewHolder(final View itemView) {
             super(itemView);
@@ -57,7 +60,7 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
             dogage = itemView.findViewById(R.id.dogage);
             lastWalk = itemView.findViewById(R.id.lastWalk);
             profilepic = itemView.findViewById(R.id.dogpic);
-            color = ((LinearLayout) itemView.findViewById(R.id.doglinearLayout));
+            color = (itemView.findViewById(R.id.doglinearLayout));
 
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -90,11 +93,11 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
         String dograce;
         String dogage;
         String lastWalk;
-        public int dogcolor;
-        public int dogpic;
+        int dogcolor;
+        int dogpic;
 
 
-        public DogObject(String pname, String pdograce, String pdogage, String plastWalk, int pdogcolor, int pdogpic){
+        DogObject(String pname, String pdograce, String pdogage, String plastWalk, int pdogcolor, int pdogpic){
 
             this.dogname = pname;
             this.dograce = pdograce;

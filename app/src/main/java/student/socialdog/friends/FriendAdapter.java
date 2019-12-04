@@ -1,4 +1,4 @@
-package student.socialdog;
+package student.socialdog.friends;
 
 import android.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -6,8 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
+
+import student.socialdog.R;
 
 public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendViewHolder> {
 
@@ -19,6 +23,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
         return friendslistedtest.size();
     }
 
+    @NonNull
     @Override
     public FriendViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -73,7 +78,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
         String lastWalk;
         int profilepic;
 
-        FriendsObject(String pname, String plastWalk, int pprofilepic){
+        public FriendsObject(String pname, String plastWalk, int pprofilepic){
             this.name = pname;
             this.lastWalk = plastWalk;
             this.profilepic = pprofilepic;

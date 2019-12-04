@@ -1,11 +1,10 @@
-package student.socialdog;
+package student.socialdog.maps;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.Context;
@@ -18,7 +17,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,29 +28,23 @@ import android.app.Dialog;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import student.socialdog.R;
+import student.socialdog.assetLoader;
 
 
 public class MapsActivity extends Fragment implements OnMapReadyCallback, LocationListener {
@@ -65,12 +57,12 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private Boolean mLocationPermissionsGranted = false;
-    Bitmap bagIcon;
-    Bitmap treeIcon;
-    LatLng currentLocation;
-    ArrayList<JSONObject> markersList;
+    private Bitmap bagIcon;
+    private Bitmap treeIcon;
+    private LatLng currentLocation;
+    private ArrayList<JSONObject> markersList;
 
-    LocationManager locationManager;
+    private LocationManager locationManager;
 
 
     @Override
@@ -188,15 +180,13 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         }
     }
 
-    public String getAddress(double lat, double lng) {
+    String getAddress(double lat, double lng) {
         Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
             Address obj = addresses.get(0);
 
-            String add = obj.getAddressLine(0);
-
-            return add;
+            return obj.getAddressLine(0);
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -253,7 +243,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         mMap.moveCamera(CameraUpdateFactory.zoomTo(zoom));
     }
 
-    public void addMarkerAtCurrentLocation(View view)
+    private void addMarkerAtCurrentLocation(View view)
     {
         Log.e(TAG, "Hello there");
         getLocation();

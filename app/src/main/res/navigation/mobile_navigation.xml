@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="student.socialdog.MapsActivity"
+        android:name="student.socialdog.maps.MapsActivity"
         android:label="@string/menu_home"
         tools:layout="@layout/activity_maps2" />
 
@@ -19,13 +19,13 @@
 
     <fragment
         android:id="@+id/nav_friendslist"
-        android:name="student.socialdog.MainFriendslist"
+        android:name="student.socialdog.friends.MainFriendslist"
         android:label="@string/menu_friendslist"
         tools:layout="@layout/friendslist_main" />
 
     <fragment
         android:id="@+id/nav_dogs"
-        android:name="student.socialdog.MainDogslist"
+        android:name="student.socialdog.dogs.MainDogslist"
         android:label="@string/menu_dogs"
         tools:layout="@layout/dogslist_main" />
 </navigation>
