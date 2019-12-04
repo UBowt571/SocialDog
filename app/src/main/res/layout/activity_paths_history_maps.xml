@@ -16,12 +16,6 @@ android:gravity="center">
         android:layout_height="0dp"
         android:layout_weight="1"
         tools:context=".PathsHistoryMaps" />
-
-    <Button
-        android:id="@+id/addmarker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ajouter lieu"/>
     <Button
         android:id="@+id/nextWalk"
         android:layout_width="wrap_content"

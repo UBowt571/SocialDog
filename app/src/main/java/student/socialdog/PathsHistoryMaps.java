@@ -78,9 +78,6 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
     Polyline pathPolyline;
     ArrayList<ArrayList<LatLng>> allPathsList;
     Marker startMarker;
-    boolean isWalking;
-    final Handler walkHandler = new Handler();
-    final int walkUpdateDelay = 5000; //milliseconds
     int currentPathId = 0;
 
     DatabaseReference pathsDB;
@@ -105,32 +102,25 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
         BitmapDrawable treeBitmap=(BitmapDrawable)getResources().getDrawable(R.drawable.arbre);
         treeIcon = Bitmap.createScaledBitmap(treeBitmap.getBitmap(), width, height, false);
 
-        Button addMarkerButton = rootView.findViewById(R.id.addmarker);
-        Button startWalkButton = rootView.findViewById(R.id.nextWalk);
-        Button endWalkButton = rootView.findViewById(R.id.previousWalk);
+        Button nexWalkButton = rootView.findViewById(R.id.nextWalk);
+        Button previousWalkButton = rootView.findViewById(R.id.previousWalk);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         markersDB = database.getReference("markers");
         pathsDB = database.getReference("paths");
 
 
-        addMarkerButton.setOnClickListener(new View.OnClickListener() {
+
+        nexWalkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addMarkerAtCurrentLocation(v);
+                nextWalk();
             }
         });
 
-        startWalkButton.setOnClickListener(new View.OnClickListener() {
+        previousWalkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startWalk();
-            }
-        });
-
-        endWalkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                endWalk();
+                previousWalk();
             }
         });
 
@@ -193,7 +183,6 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                 Object lng;
                 pathList.clear();
                 allPathsList.clear();
-                int test = 0;
                 for(Map.Entry<String, Map> current : paths.entrySet())
                 {
                     int i = 0;
@@ -202,7 +191,6 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                         lat = current.getValue().get("latitude" + i);
                         lng = current.getValue().get("longitude" + i);
                         pathList.add(new LatLng((Double)lat,(Double) lng));
-                        //allPathsList.get(i).add(new LatLng((Double)lat,(Double) lng));
                         //Log.e(TAG,"lat " + i + " : " + Double.toString(pathList.get(i).latitude));
                         //Log.e(TAG,"lng " + i + " : " + Double.toString(pathList.get(i).longitude));
                         i++;
@@ -219,9 +207,6 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
             }
         });
 
-        //Log.e("allpathList",Double.toString(allPathsList.get(0).get(0).latitude));
-        //drawPath(allPathsList.get(0));
-
         if(mLocationPermissionsGranted){
             getLocation();
             goToLocation(currentLocation.latitude, currentLocation.longitude);
@@ -231,34 +216,16 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
         }
     }
 
-    void startWalk()
+    void nextWalk()
     {
         drawPath(allPathsList.get(++currentPathId));
-        /*
-        if (!isWalking)
-        {
-            pathList.clear();
-            isWalking = true;
-            walkHandler.postDelayed(new Runnable(){
-                public void run(){
-                    addLocationToPath();
-                    drawPath(pathList);
-                    walkHandler.postDelayed(this, walkUpdateDelay);
-                }
-            }, walkUpdateDelay);
-        }*/
+
     }
 
-    void endWalk()
+    void previousWalk()
     {
         if(currentPathId > 0)
             drawPath(allPathsList.get(--currentPathId));
-        /*
-        if(isWalking)
-        {
-            isWalking = false;
-            walkHandler.removeCallbacksAndMessages(null);
-        }*/
     }
 
     //Move Camera to the center of a walk
@@ -304,13 +271,6 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
     void drawPathId(int id)
     {
         drawPath(allPathsList.get(id));
-    }
-
-    //Add current location to the path list
-    private void addLocationToPath()
-    {
-        getLocation();
-        pathList.add(currentLocation);
     }
 
     private void getLocation()
@@ -407,57 +367,6 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
         mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
     }
 
-    public void addMarkerAtCurrentLocation(View view)
-    {
-        /***
-         * Un marqueur ne sera pas directement approuvé : il ira dans une base de marqueurs
-         * non approuvés.
-         * Une fois qu'il y a 2 marqueurs non approuvés très proches, ils sont réunis (par
-         * la moyenne) en un seul marqueur approuvé.
-         * C'est une méthode simpliste de vérification pour de l'informatique participative.
-         * Voir procédure verifyMarkersUnapproved()
-         */
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        markers_unapprovedDB = database.getReference("markers_unapproved").push();
-        getLocation();
-        String[] markersTypes = {"Espace vert", "Sac à déjection"};
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Quel type de lieu voulez-vous ajouter ?");
-        builder.setItems(markersTypes, new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Bitmap markerIcon;
-                String type="";
-                switch(which){
-                    case(0):
-                    default:
-                        markerIcon = treeIcon;
-                        type = "tree";
-                        break;
-                    case(1):
-                        markerIcon = bagIcon;
-                        type = "bag";
-                        break;
-                }
-                HashMap<String, Object> map = new HashMap<>();
-                map.put("latitude", currentLocation.latitude);
-                map.put("longitude", currentLocation.longitude);
-                map.put("type", type);
-                markers_unapprovedDB.setValue(map);
-
-                MarkerOptions options = new MarkerOptions()
-                        .position(new LatLng(currentLocation.latitude, currentLocation.longitude))
-                        .title(getAddress(currentLocation.latitude, currentLocation.longitude))
-                        .icon(BitmapDescriptorFactory.fromBitmap(markerIcon));
-                mMap.addMarker(options);
-            }
-
-        });
-        builder.show();
-    }
 
     private void getLocationPermission(){
         Log.d(TAG, "getLocationPermission: getting location permissions");
