@@ -225,6 +225,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         if(mLocationPermissionsGranted){
             getLocation();
             goToLocation(currentLocation.latitude, currentLocation.longitude);
+            Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAAA");
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setCompassEnabled(true);
         }
@@ -272,8 +273,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         }
         medLat = medLat/pathFocus.size();
         medLng = medLng/pathFocus.size();
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(medLat,medLng)));
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(5));
+        goToLocation(medLat,medLng,5);
     }
 
 
@@ -396,15 +396,15 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     private void goToLocation(double lat, double lng)
     {
         LatLng position = new LatLng(lat, lng);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
         mMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
     }
 
     private void goToLocation(double lat, double lng, float zoom)
     {
         LatLng position = new LatLng(lat, lng);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
         mMap.moveCamera(CameraUpdateFactory.zoomTo(zoom));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
     }
 
     public void addMarkerAtCurrentLocation(View view)
