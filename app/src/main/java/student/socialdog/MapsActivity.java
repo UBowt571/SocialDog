@@ -144,7 +144,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         pathList = new ArrayList<>();
-        allPathsList = new ArrayList<>();
+        allPathsList = new ArrayList<ArrayList<LatLng>>();
         // Lecture des marqueurs depuis database FireBase
         markersDB.addValueEventListener(new ValueEventListener() {
             @Override
@@ -192,34 +192,24 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                 Object lng;
                 pathList.clear();
                 allPathsList.clear();
-                int i = 0;
-                Log.e(TAG, "EEEEEEEEEEEEEEEEEEEEEEE");
+                int test = 0;
                 for(Map.Entry<String, Map> current : paths.entrySet())
                 {
-                    //Log.e(TAG, "/point" + i + "/latitude");
-
-
-                    while (current.getValue().get("/point" + i + "/latitude") != null)
+                    int i = 0;
+                    while (current.getValue().get("latitude" + i) != null)
                     {
-                        lat = current.getValue().get("/point" + i + "/latitude");
-                        lng = current.getValue().get("/point" + i + "/longitude");
+                        lat = current.getValue().get("latitude" + i);
+                        lng = current.getValue().get("longitude" + i);
+                        pathList.add(new LatLng((Double)lat,(Double) lng));
+                        //allPathsList.get(i).add(new LatLng((Double)lat,(Double) lng));
+                        //Log.e(TAG,"lat " + i + " : " + Double.toString(pathList.get(i).latitude));
+                        //Log.e(TAG,"lng " + i + " : " + Double.toString(pathList.get(i).longitude));
                         i++;
-                        pathList.add(new LatLng((Double)lat,(Double) lng));
-                        Log.e(TAG, "OOOOOOOOO");
-                        Log.e(TAG, Double.toString(pathList.get(i).latitude));
                     }
-
-                    /*
-                    for(int i = 0; i<current.size(); i++)
-                    {
-                        lat = paths.get(0).get("point" + i + "/latitude");
-                        lng = paths.get(0).get("point" + i + "/longitude");
-                        pathList.add(new LatLng((Double)lat,(Double) lng));
-                        Log.e(TAG, Double.toString(pathList.get(i).latitude));
-                    }*/
                     allPathsList.add(pathList);
-                    pathList.clear();
+                    pathList = new ArrayList<>();
                 }
+                Log.e(TAG,Double.toString(allPathsList.get(0).get(0).latitude));
             }
 
             @Override
@@ -228,6 +218,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             }
         });
 
+        //Log.e("allpathList",Double.toString(allPathsList.get(0).get(0).latitude));
         //drawPath(allPathsList.get(0));
 
         if(mLocationPermissionsGranted){
@@ -241,6 +232,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
     void startWalk()
     {
+        drawPath(allPathsList.get(0));
+        /*
         if (!isWalking)
         {
             pathList.clear();
@@ -252,16 +245,18 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                     walkHandler.postDelayed(this, walkUpdateDelay);
                 }
             }, walkUpdateDelay);
-        }
+        }*/
     }
 
     void endWalk()
     {
+        drawPath(allPathsList.get(1));
+        /*
         if(isWalking)
         {
             isWalking = false;
             walkHandler.removeCallbacksAndMessages(null);
-        }
+        }*/
     }
 
 
