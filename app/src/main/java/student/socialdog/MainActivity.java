@@ -2,150 +2,60 @@ package student.socialdog;
 
 import android.os.Bundle;
 
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
+
+import com.google.android.material.navigation.NavigationView;
+
+import androidx.drawerlayout.widget.DrawerLayout;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
-import android.util.Log;
-import android.view.View;
-import android.view.MenuItem;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import org.json.JSONObject;
+public class MainActivity extends AppCompatActivity {   // implements NavigationView.OnNavigationItemSelectedListener
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MainActivity extends AppCompatActivity {
-
-    private ArrayList<JSONObject> mNavigationDrawerItems;
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
-    Toolbar toolbar;
-    CharSequence mDrawerTitle;
-    private CharSequence mTitle;
-    androidx.appcompat.app.ActionBarDrawerToggle mDrawerToggle;
+    private AppBarConfiguration mAppBarConfiguration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        JSONObject list_items = assetLoader.JSON(this,"menu_items.json");
-
-        mTitle = mDrawerTitle = getTitle();
-        mNavigationDrawerItems = assetLoader.getJSONArray(list_items,"items");
-        mDrawerLayout = findViewById(R.id.drawer_layout);
-        mDrawerList = findViewById(R.id.left_drawer);
-
-        setupToolbar();
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-
-        DrawerItemCustomAdapter adapter = new DrawerItemCustomAdapter(this, R.layout.list_view_item_row, mNavigationDrawerItems);
-        mDrawerList.setAdapter(adapter);
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-        mDrawerLayout = findViewById(R.id.drawer_layout);
-        mDrawerLayout.addDrawerListener(mDrawerToggle);
-        setupDrawerToggle();
-
-        Fragment fragment = new MapsActivity();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-
-    }
-
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);
-        }
-
-    }
-
-    private void selectItem(int position) {
-
-        Fragment fragment = null;
-
-        switch (position) {
-            case 0:
-                fragment = new MapsActivity();
-                break;
-            case 1:
-                fragment = new MapsActivity();
-                break;
-            case 2:
-                fragment = new MainFriendslist();
-                break;
-            case 3:
-                fragment = new MainDogslist();
-                break;
-
-            default:
-                break;
-        }
-
-        if (fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-
-            mDrawerList.setItemChecked(position, true);
-            mDrawerList.setSelection(position);
-            try {
-                setTitle(mNavigationDrawerItems.get(position).getString("name"));
-            }catch (Exception ex){
-                ex.printStackTrace();
-                return;
-            }
-            mDrawerLayout.closeDrawer(mDrawerList);
-
-        } else {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            List fragments = fragmentManager.getFragments();
-            fragmentManager.popBackStack();
-            Log.e("MainActivity", "Error in creating fragment");
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void setTitle(CharSequence title) {
-        mTitle = title;
-        getSupportActionBar().setTitle(mTitle);
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
-
-    void setupToolbar(){
-        toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
+        mAppBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_friendslist,
+                R.id.nav_tools)
+                .setDrawerLayout(drawer)
+                .build();
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView, navController);
+        //navigationView.setNavigationItemSelectedListener(this);
     }
 
-    void setupDrawerToggle(){
-        mDrawerToggle = new androidx.appcompat.app.ActionBarDrawerToggle(this,mDrawerLayout,toolbar,R.string.app_name, R.string.app_name);
-        //This is necessary to change the icon of the Drawer Toggle upon state change.
-        mDrawerToggle.syncState();
+    @Override
+    public boolean onSupportNavigateUp() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
+                || super.onSupportNavigateUp();
     }
-    void getImagesID(){
 
-    }
+//    @Override
+//    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+//        Log.d("------------", "onNavigationItemSelected: "+menuItem.getItemId());
+//        Fragment fragment = null;
+//        switch (menuItem.getItemId()){
+//          case R.id.nav_friendslist :
+//                fragment = new MapsActivity();
+//        }
+//        FragmentManager FM = getSupportFragmentManager();
+//        FM.beginTransaction();
+//        return false;
+//    }
 }
