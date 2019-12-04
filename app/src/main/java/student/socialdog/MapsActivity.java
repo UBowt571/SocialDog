@@ -47,6 +47,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -184,22 +187,36 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         pathsDB.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAA");
-                ArrayList<HashMap> paths = (ArrayList<HashMap>)dataSnapshot.getValue();
+                HashMap<String, Map> paths =  (HashMap<String,Map>)dataSnapshot.getValue();
                 Object lat;
                 Object lng;
-                HashMap test;
                 pathList.clear();
                 allPathsList.clear();
-                for(int k = 0; k<paths.size(); k++)
+                int i = 0;
+                Log.e(TAG, "EEEEEEEEEEEEEEEEEEEEEEE");
+                for(Map.Entry<String, Map> current : paths.entrySet())
                 {
-                    for(int i = 0; i<paths.get(k).size(); i++)
+                    //Log.e(TAG, "/point" + i + "/latitude");
+
+
+                    while (current.getValue().get("/point" + i + "/latitude") != null)
+                    {
+                        lat = current.getValue().get("/point" + i + "/latitude");
+                        lng = current.getValue().get("/point" + i + "/longitude");
+                        i++;
+                        pathList.add(new LatLng((Double)lat,(Double) lng));
+                        Log.e(TAG, "OOOOOOOOO");
+                        Log.e(TAG, Double.toString(pathList.get(i).latitude));
+                    }
+
+                    /*
+                    for(int i = 0; i<current.size(); i++)
                     {
                         lat = paths.get(0).get("point" + i + "/latitude");
                         lng = paths.get(0).get("point" + i + "/longitude");
                         pathList.add(new LatLng((Double)lat,(Double) lng));
                         Log.e(TAG, Double.toString(pathList.get(i).latitude));
-                    }
+                    }*/
                     allPathsList.add(pathList);
                     pathList.clear();
                 }
@@ -211,7 +228,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             }
         });
 
-        drawPath(allPathsList.get(0));
+        //drawPath(allPathsList.get(0));
 
         if(mLocationPermissionsGranted){
             getLocation();
