@@ -47,9 +47,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,6 +54,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Map;
 
 
 public class MapsActivity extends Fragment implements OnMapReadyCallback, LocationListener {
@@ -81,8 +79,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     final Handler walkHandler = new Handler();
     final int walkUpdateDelay = 5000; //milliseconds
 
-    DatabaseReference markersDB;
     DatabaseReference pathsDB;
+    DatabaseReference markersDB, markers_unapprovedDB, allMarkersDB;
     LocationManager locationManager;
 
     @Override
@@ -148,17 +146,17 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         markersDB.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                ArrayList<HashMap> markers =  (ArrayList<HashMap>)dataSnapshot.getValue();
+                HashMap<String, Map> markers =  (HashMap<String,Map>)dataSnapshot.getValue();
                 Bitmap markerIcon;
                 Object lati;
                 Object longi;
                 Object type;
-                for(int i=0; i<markers.size(); i++)
+                for(Map.Entry<String, Map> current : markers.entrySet())
                 {
                     try{
-                        type = markers.get(i).get("type");
-                        lati = markers.get(i).get("latitude");
-                        longi = markers.get(i).get("longitude");
+                        type = current.getValue().get("type");
+                        lati = current.getValue().get("latitude");
+                        longi = current.getValue().get("longitude");
                     } catch(Exception ex){
                         ex.printStackTrace();
                         return;
@@ -181,6 +179,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             }
         });
+        verifyMarkersUnapproved();
 
         pathsDB.addValueEventListener(new ValueEventListener() {
             @Override
@@ -375,10 +374,17 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
     public void addMarkerAtCurrentLocation(View view)
     {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        //DatabaseReference myRef = database.getReference("message");
-        //myRef.setValue("Hello, World!");
+        /***
+         * Un marqueur ne sera pas directement approuvé : il ira dans une base de marqueurs
+         * non approuvés.
+         * Une fois qu'il y a 2 marqueurs non approuvés très proches, ils sont réunis (par
+         * la moyenne) en un seul marqueur approuvé.
+         * C'est une méthode simpliste de vérification pour de l'informatique participative.
+         * Voir procédure verifyMarkersUnapproved()
+         */
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        markers_unapprovedDB = database.getReference("markers_unapproved").push();
         getLocation();
         String[] markersTypes = {"Espace vert", "Sac à déjection"};
 
@@ -388,26 +394,32 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // the user clicked on markersTypes[which]
                 Bitmap markerIcon;
-                String markerTitle;
+                String type="";
                 switch(which){
                     case(0):
                     default:
                         markerIcon = treeIcon;
-                        markerTitle = "Espace vert";
+                        type = "tree";
                         break;
                     case(1):
                         markerIcon = bagIcon;
-                        markerTitle = "Sac à déjection";
+                        type = "bag";
                         break;
                 }
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("latitude", currentLocation.latitude);
+                map.put("longitude", currentLocation.longitude);
+                map.put("type", type);
+                markers_unapprovedDB.setValue(map);
+
                 MarkerOptions options = new MarkerOptions()
                         .position(new LatLng(currentLocation.latitude, currentLocation.longitude))
                         .title(getAddress(currentLocation.latitude, currentLocation.longitude))
                         .icon(BitmapDescriptorFactory.fromBitmap(markerIcon));
                 mMap.addMarker(options);
             }
+
         });
         builder.show();
     }
@@ -484,6 +496,66 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             }
         }
         return false;
+    }
+
+
+    public void verifyMarkersUnapproved(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        markers_unapprovedDB = database.getReference("markers_unapproved");
+        markersDB = database.getReference("markers").push();
+        markers_unapprovedDB.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, Map> markers_unapproved =  (HashMap<String,Map>)dataSnapshot.getValue();
+                HashMap<String, Map> markers_trunc = new HashMap<>();
+                HashMap<String, Double> map = new HashMap<>();
+                // On ajoute tous les objets dans une nouvelle map, avec
+                // les coordonnées arrondies pour les comparer
+                for(Map.Entry<String, Map> current : markers_unapproved.entrySet())
+                {
+                    Object key = current.getKey();
+                    Object lati = current.getValue().get("latitude");
+                    Object longi = current.getValue().get("longitude");
+                    lati = (double)Math.round((double)lati * 100000d) / 100000d;
+                    longi = (double)Math.round((double)longi * 100000d) / 100000d;
+                    map.put("latitude",(double) lati);
+                    map.put("longitude", (double) longi);
+                    markers_trunc.put(key.toString(),map);
+                }
+                HashMap<String, Map> markers_trunc2 = markers_trunc;
+                HashMap<String, Object> result  = new HashMap<>();
+                // On compare nos coordonnées arrondies
+                for(Map.Entry<String, Map> current : markers_trunc.entrySet())
+                {
+                    for(Map.Entry<String, Map> current2 : markers_trunc2.entrySet()){
+                        if(current.getValue().get("longitude") == current2.getValue().get("longitude")
+                        && current.getValue().get("latitude") == current2.getValue().get("latitude")
+                        && current.getValue().get("type") == current2.getValue().get("type")){
+                            // Moyenne des longitudes et latitudes retenues
+                            double lati = ((double) current.getValue().get("latitude") + (double) current2.getValue().get("latitude"))/2;
+                            double longi = ((double) current.getValue().get("longitude") + (double) current2.getValue().get("longitude"))/2;
+
+                            // Ajout à la DB du nouveau marqueur
+                            result.put("latitude", lati);
+                            result.put("longitude", longi);
+                            result.put("type", current.getValue().get("type"));
+                            markersDB.setValue(result);
+
+                            // On supprime les 2 entrées dans les marqueurs non approuvés
+                            /*markers_unapprovedDB = database.getReference("markers_unapproved/"+current.getKey());
+                            markers_unapprovedDB.removeValue();
+                            markers_unapprovedDB = database.getReference("markers_unapproved/"+current2.getKey());
+                            markers_unapprovedDB.removeValue();*/
+
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        });
     }
 
 

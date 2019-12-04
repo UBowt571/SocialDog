@@ -9,11 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.ArrayList;
-
-
-import static student.socialdog.R.color.*;
 
 public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
     private ArrayList<DogObject> dogslisted = MainDogslist.dogslist;
@@ -80,7 +76,6 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
             dogage.setText(dog.dogage);
             lastWalk.setText(dog.lastWalk);
             profilepic.setImageResource(dog.dogpic);
-
             color.setBackgroundColor(dog.dogcolor);
         }
     }

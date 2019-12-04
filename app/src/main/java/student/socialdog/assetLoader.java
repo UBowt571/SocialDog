@@ -9,6 +9,8 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class assetLoader {
     private static Context mContext = null;
@@ -61,7 +63,7 @@ public class assetLoader {
      * Returns an ArrayList of FriendAdapter.FriendsObject
      * @return ArrayList<FriendAdapter.FriendsObject> Return a list of FriendAdapter.FriendsObject
      */
-    public static ArrayList<FriendAdapter.FriendsObject> getFriends(ArrayList<HashMap> friendsInDB){
+    public static ArrayList<FriendAdapter.FriendsObject> getFriends(HashMap<String,Map> friendsInDB){
         return getFriends(mContext,friendsInDB);
     }
 
@@ -71,13 +73,14 @@ public class assetLoader {
      * @return ArrayList<FriendAdapter.FriendsObject> Return a list of FriendAdapter.FriendsObject
      */
 
-    public static ArrayList<FriendAdapter.FriendsObject> getFriends(Context pcontext,ArrayList<HashMap> friendsInDB) {
-        ArrayList<FriendAdapter.FriendsObject> friendslist = new ArrayList<>();
-        for(int i=0; i<friendsInDB.size(); i++) {
+    public static ArrayList<FriendAdapter.FriendsObject> getFriends(Context pcontext, HashMap<String,Map> friendsInDB) {
+            ArrayList<FriendAdapter.FriendsObject> friendslist = new ArrayList<>();
+        for(Map.Entry<String, Map> current : friendsInDB.entrySet()) {
             try{
-                Object lastWalk = friendsInDB.get(i).get("lastWalk");
-                Object name = friendsInDB.get(i).get("name");
-                Object ppic = friendsInDB.get(i).get("ppic");
+
+                Object name = current.getValue().get("name");
+                Object lastWalk = current.getValue().get("lastWalk");
+                Object ppic = current.getValue().get("ppic");
                 int imgResID = getResIDfromImageName(ppic.toString(),pcontext);
                 friendslist.add(new FriendAdapter.FriendsObject((String) name,(String) lastWalk, imgResID));
             } catch(Exception ex){
@@ -119,7 +122,7 @@ public class assetLoader {
      * Returns an ArrayList of DogAdapter.DogObject
      * @return ArrayList<DogAdapter.DogObject> Return a list of DogAdapter.DogObject
      */
-    public static ArrayList<DogAdapter.DogObject> getDogs(ArrayList<HashMap> dogsInDB){
+    public static ArrayList<DogAdapter.DogObject> getDogs(Map<String,Map> dogsInDB){
         return getDogs(mContext,dogsInDB);
     }
 
@@ -129,17 +132,17 @@ public class assetLoader {
      * @return ArrayList<DogAdapter.DogObject> Return a list of DogAdapter.DogObject
      */
 
-    public static ArrayList<DogAdapter.DogObject> getDogs(Context pcontext,ArrayList<HashMap> dogsInDB) {
+    public static ArrayList<DogAdapter.DogObject> getDogs(Context pcontext,Map<String,Map> dogsInDB) {
         ArrayList<DogAdapter.DogObject> dogslist = new ArrayList<>();
-        for(int i=0; i<dogsInDB.size(); i++) {
+        for(Map.Entry<String, Map> current : dogsInDB.entrySet()) {
             try{
-                Object dogname = dogsInDB.get(i).get("dogname");
-                Object dograce = dogsInDB.get(i).get("dograce");
-                Object dogage = dogsInDB.get(i).get("dogage");
-                Object lastWalk = dogsInDB.get(i).get("lastWalk");
-                Object dogcolor = dogsInDB.get(i).get("dogcolor");
+                Object dogname = current.getValue().get("dogname");
+                Object dograce = current.getValue().get("dograce");
+                Object dogage = current.getValue().get("dogage");
+                Object lastWalk = current.getValue().get("lastWalk");
+                Object dogcolor = current.getValue().get("dogcolor");
                 int idogcolor = Integer.parseInt(dogcolor.toString());
-                Object dogpic = dogsInDB.get(i).get("dogpic");
+                Object dogpic = current.getValue().get("dogpic");
                 int imgResID = getResIDfromImageName(dogpic.toString(),pcontext);
                 dogslist.add(new DogAdapter.DogObject((String) dogname,(String) dograce,(String) dogage,(String) lastWalk, idogcolor,imgResID));
             } catch(Exception ex){
