@@ -14,7 +14,7 @@
             android:title="@string/menu_gallery" />
         <item
             android:id="@+id/nav_friendslist"
-            android:icon="@drawable/ic_group_black_24dp"
+            android:icon="@drawable/ic_friends_black_24dp"
             android:title="@string/menu_friendslist" />
         <item
             android:id="@+id/nav_tools"

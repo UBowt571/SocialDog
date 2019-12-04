@@ -14,8 +14,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.view.Menu;
-
 public class MainActivity extends AppCompatActivity {   // implements NavigationView.OnNavigationItemSelectedListener
 
     private AppBarConfiguration mAppBarConfiguration;
@@ -39,13 +37,6 @@ public class MainActivity extends AppCompatActivity {   // implements Navigation
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
         //navigationView.setNavigationItemSelectedListener(this);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
     }
 
     @Override
