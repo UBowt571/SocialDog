@@ -8,7 +8,7 @@
     <string name="action_settings">Settings</string>
 
     <string name="menu_home">Accueil</string>
-    <string name="menu_gallery">Promenades</string>
+    <string name="menu_walks">Promenades</string>
     <string name="menu_friendslist">Amis</string>
-    <string name="menu_tools">Chiens</string>
+    <string name="menu_dogs">Chiens</string>
 </resources>
