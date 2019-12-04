@@ -81,6 +81,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     boolean isWalking;
     final Handler walkHandler = new Handler();
     final int walkUpdateDelay = 5000; //milliseconds
+    int currentPathId = 0;
 
     DatabaseReference pathsDB;
     DatabaseReference markersDB, markers_unapprovedDB, allMarkersDB;
@@ -182,7 +183,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             }
         });
-        verifyMarkersUnapproved();
+        //verifyMarkersUnapproved();
 
         pathsDB.addValueEventListener(new ValueEventListener() {
             @Override
@@ -227,12 +228,11 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setCompassEnabled(true);
         }
-
     }
 
     void startWalk()
     {
-        drawPath(allPathsList.get(0));
+        drawPath(allPathsList.get(++currentPathId));
         /*
         if (!isWalking)
         {
@@ -250,13 +250,30 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
     void endWalk()
     {
-        drawPath(allPathsList.get(1));
+        if(currentPathId > 0)
+            drawPath(allPathsList.get(--currentPathId));
         /*
         if(isWalking)
         {
             isWalking = false;
             walkHandler.removeCallbacksAndMessages(null);
         }*/
+    }
+
+    //Move Camera to the center of a walk
+    void placeCameraOnPath(ArrayList<LatLng> pathFocus)
+    {
+        double medLat = 0;
+        double medLng = 0;
+        for (int i = 0; i < pathFocus.size(); i++)
+        {
+            medLat += pathFocus.get(i).latitude;
+            medLng += pathFocus.get(i).longitude;
+        }
+        medLat = medLat/pathFocus.size();
+        medLng = medLng/pathFocus.size();
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(medLat,medLng)));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(5));
     }
 
 
@@ -281,6 +298,12 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         polylineOptions.width(10);
         polylineOptions.geodesic(false);
         pathPolyline = mMap.addPolyline(polylineOptions);
+        placeCameraOnPath(pointList);
+    }
+
+    void drawPathId(int id)
+    {
+        drawPath(allPathsList.get(id));
     }
 
     //Add current location to the path list
