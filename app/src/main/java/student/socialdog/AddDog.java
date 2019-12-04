@@ -38,7 +38,7 @@ public class AddDog extends AppCompatActivity {
         EditText dogage = findViewById(R.id.dogagefield);
         String sdogage = dogage.getText().toString()+ " ans";
 
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("dogname", dogname.getText().toString());
         map.put("dograce", dograce.getText().toString());
         map.put("dogage", sdogage);

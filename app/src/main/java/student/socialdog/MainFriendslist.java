@@ -79,8 +79,6 @@ public class MainFriendslist extends Fragment {
     private void startAddFriendActivity() {
         Intent intent = new Intent(this.getContext(), AddFriend.class);
         startActivity(intent);
-
-
     }
 }
 

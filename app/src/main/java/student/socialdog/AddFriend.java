@@ -38,7 +38,7 @@ public class AddFriend extends AppCompatActivity {
         EditText lastname = findViewById(R.id.lastnamefield);
         String name = firstname.getText()+" "+lastname.getText();
 
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("name", name);
         map.put("lastWalk", "Non actualisé.");
         map.put("ppic", "mgagnon");
