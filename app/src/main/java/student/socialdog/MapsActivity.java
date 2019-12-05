@@ -51,7 +51,10 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -76,12 +79,12 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     ArrayList<JSONObject> markersList;
     ArrayList<LatLng> pathList;
     Polyline pathPolyline;
-    ArrayList<ArrayList<LatLng>> allPathsList;
     Marker startMarker;
     boolean isWalking;
     final Handler walkHandler = new Handler();
     final int walkUpdateDelay = 5000; //milliseconds
     int currentPathId = 0;
+    int walkDuration = 0; //milliseconds
 
     DatabaseReference pathsDB;
     DatabaseReference markersDB, markers_unapprovedDB, allMarkersDB;
@@ -145,7 +148,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         pathList = new ArrayList<>();
-        allPathsList = new ArrayList<ArrayList<LatLng>>();
         // Lecture des marqueurs depuis database FireBase
         markersDB.addValueEventListener(new ValueEventListener() {
             @Override
@@ -185,43 +187,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         });
         //verifyMarkersUnapproved();
 
-        pathsDB.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String, Map> paths =  (HashMap<String,Map>)dataSnapshot.getValue();
-                Object lat;
-                Object lng;
-                pathList.clear();
-                allPathsList.clear();
-                int test = 0;
-                for(Map.Entry<String, Map> current : paths.entrySet())
-                {
-                    int i = 0;
-                    while (current.getValue().get("latitude" + i) != null)
-                    {
-                        lat = current.getValue().get("latitude" + i);
-                        lng = current.getValue().get("longitude" + i);
-                        pathList.add(new LatLng((Double)lat,(Double) lng));
-                        //allPathsList.get(i).add(new LatLng((Double)lat,(Double) lng));
-                        //Log.e(TAG,"lat " + i + " : " + Double.toString(pathList.get(i).latitude));
-                        //Log.e(TAG,"lng " + i + " : " + Double.toString(pathList.get(i).longitude));
-                        i++;
-                    }
-                    allPathsList.add(pathList);
-                    pathList = new ArrayList<>();
-                }
-                Log.e(TAG,Double.toString(allPathsList.get(0).get(0).latitude));
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-            }
-        });
-
-        //Log.e("allpathList",Double.toString(allPathsList.get(0).get(0).latitude));
-        //drawPath(allPathsList.get(0));
-
         if(mLocationPermissionsGranted){
             getLocation();
             goToLocation(currentLocation.latitude, currentLocation.longitude);
@@ -233,10 +198,9 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
     void startWalk()
     {
-        drawPath(allPathsList.get(++currentPathId));
-        /*
         if (!isWalking)
         {
+            walkDuration = 0;
             pathList.clear();
             isWalking = true;
             walkHandler.postDelayed(new Runnable(){
@@ -244,36 +208,36 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                     addLocationToPath();
                     drawPath(pathList);
                     walkHandler.postDelayed(this, walkUpdateDelay);
+                    walkDuration += walkUpdateDelay;
                 }
             }, walkUpdateDelay);
-        }*/
+        }
     }
 
     void endWalk()
     {
-        if(currentPathId > 0)
-            drawPath(allPathsList.get(--currentPathId));
-        /*
         if(isWalking)
         {
             isWalking = false;
             walkHandler.removeCallbacksAndMessages(null);
-        }*/
-    }
 
-    //Move Camera to the center of a walk
-    void placeCameraOnPath(ArrayList<LatLng> pathFocus)
-    {
-        double medLat = 0;
-        double medLng = 0;
-        for (int i = 0; i < pathFocus.size(); i++)
-        {
-            medLat += pathFocus.get(i).latitude;
-            medLng += pathFocus.get(i).longitude;
+            //Get duration
+            String duration;
+            walkDuration = walkDuration/60000;
+            if(walkDuration < 1) duration = "< 1 min";
+            else
+            {
+                if(walkDuration > 59) duration = walkDuration/60 + " h " + walkDuration%60 + " min";
+                else duration = walkDuration + " min";
+            }
+
+            //Get date
+            Date c = Calendar.getInstance().getTime();
+            System.out.println("Current time => " + c);
+
+            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+            String formattedDate = df.format(c);
         }
-        medLat = medLat/pathFocus.size();
-        medLng = medLng/pathFocus.size();
-        goToLocation(medLat,medLng,5);
     }
 
 
@@ -298,13 +262,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         polylineOptions.width(10);
         polylineOptions.geodesic(false);
         pathPolyline = mMap.addPolyline(polylineOptions);
-        placeCameraOnPath(pointList);
     }
 
-    void drawPathId(int id)
-    {
-        drawPath(allPathsList.get(id));
-    }
 
     //Add current location to the path list
     private void addLocationToPath()
