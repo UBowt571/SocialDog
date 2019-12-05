@@ -58,6 +58,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private Boolean mLocationPermissionsGranted = false;
+    static boolean verifyOK = false;
+    static boolean goForVerify = false;
     Bitmap bagIcon;
     Bitmap treeIcon;
     LatLng currentLocation;
@@ -141,7 +143,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             }
         });
-        verifyMarkersUnapproved();
+
 
         if(mLocationPermissionsGranted){
             getLocation();
@@ -250,13 +252,13 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         /***
          * Un marqueur ne sera pas directement approuvé : il ira dans une base de marqueurs
          * non approuvés.
-         * Une fois qu'il y a 2 marqueurs non approuvés très proches, ils sont réunis (par
-         * la moyenne) en un seul marqueur approuvé.
+         * Une fois qu'il y a 2 marqueurs non approuvés très proches, ils sont réunis
+         * en un seul marqueur approuvé.
          * C'est une méthode simpliste de vérification pour de l'informatique participative.
          * Voir procédure verifyMarkersUnapproved()
          */
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
         markers_unapprovedDB = database.getReference("markers_unapproved").push();
         getLocation();
         String[] markersTypes = {"Espace vert", "Sac à déjection"};
@@ -284,17 +286,22 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                 map.put("latitude", currentLocation.latitude);
                 map.put("longitude", currentLocation.longitude);
                 map.put("type", type);
-                markers_unapprovedDB.setValue(map);
 
-                MarkerOptions options = new MarkerOptions()
-                        .position(new LatLng(currentLocation.latitude, currentLocation.longitude))
-                        .title(getAddress(currentLocation.latitude, currentLocation.longitude))
-                        .icon(BitmapDescriptorFactory.fromBitmap(markerIcon));
-                mMap.addMarker(options);
+                verifyMarkersUnapproved(currentLocation.latitude,currentLocation.longitude, type);
+                while(goForVerify==false);
+                if(verifyOK){
+                    // Ajout à la DB du nouveau marqueur
+                    markersDB.setValue(map);
+                }
+                else{
+                    markers_unapprovedDB = database.getReference("markers_unapproved").push();
+                    markers_unapprovedDB.setValue(map);
+                }
             }
 
         });
         builder.show();
+
     }
 
     private void getLocationPermission(){
@@ -372,7 +379,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     }
 
 
-    public void verifyMarkersUnapproved(){
+    public void verifyMarkersUnapproved(double latiReceived, double longiReceived, final String typeReceived){
+        final double curLati = (double)Math.round((double)latiReceived * 100000d) / 100000d;
+        final double curLongi = (double)Math.round((double)longiReceived * 100000d) / 100000d;
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         markers_unapprovedDB = database.getReference("markers_unapproved");
         markersDB = database.getReference("markers").push();
@@ -391,36 +401,17 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                     Object longi = current.getValue().get("longitude");
                     lati = (double)Math.round((double)lati * 100000d) / 100000d;
                     longi = (double)Math.round((double)longi * 100000d) / 100000d;
+
                     map.put("latitude",(double) lati);
                     map.put("longitude", (double) longi);
                     markers_trunc.put(key.toString(),map);
                 }
-                HashMap<String, Map> markers_trunc2 = markers_trunc;
-                HashMap<String, Object> result  = new HashMap<>();
                 // On compare nos coordonnées arrondies
                 for(Map.Entry<String, Map> current : markers_trunc.entrySet())
                 {
-                    for(Map.Entry<String, Map> current2 : markers_trunc2.entrySet()){
-                        if(current.getValue().get("longitude") == current2.getValue().get("longitude")
-                        && current.getValue().get("latitude") == current2.getValue().get("latitude")
-                        && current.getValue().get("type") == current2.getValue().get("type")){
-                            // Moyenne des longitudes et latitudes retenues
-                            double lati = ((double) current.getValue().get("latitude") + (double) current2.getValue().get("latitude"))/2;
-                            double longi = ((double) current.getValue().get("longitude") + (double) current2.getValue().get("longitude"))/2;
-
-                            // Ajout à la DB du nouveau marqueur
-                            result.put("latitude", lati);
-                            result.put("longitude", longi);
-                            result.put("type", current.getValue().get("type"));
-                            markersDB.setValue(result);
-
-                            // On supprime les 2 entrées dans les marqueurs non approuvés
-                            /*markers_unapprovedDB = database.getReference("markers_unapproved/"+current.getKey());
-                            markers_unapprovedDB.removeValue();
-                            markers_unapprovedDB = database.getReference("markers_unapproved/"+current2.getKey());
-                            markers_unapprovedDB.removeValue();*/
-
-                        }
+                    if((double)current.getValue().get("longitude") == curLongi
+                    && (double)current.getValue().get("latitude") == curLati){
+                        verifyOK = true;
                     }
                 }
             }
@@ -429,6 +420,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             }
         });
+        goForVerify = true;
     }
 
 
