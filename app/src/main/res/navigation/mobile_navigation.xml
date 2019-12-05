@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="student.socialdog.MapsActivity"
+        android:label="@string/menu_home"
+        tools:layout="@layout/activity_maps2" />
+
+    <!--<fragment
+        android:id="@+id/nav_gallery"
+        android:name="student.socialdog."
+        android:label="@string/menu_walks"
+        tools:layout="@layout/fragment_gallery" />-->
+
+    <fragment
+        android:id="@+id/nav_friendslist"
+        android:name="student.socialdog.MainFriendslist"
+        android:label="@string/menu_friendslist"
+        tools:layout="@layout/friendslist_main" />
+
+    <fragment
+        android:id="@+id/nav_dogs"
+        android:name="student.socialdog.MainDogslist"
+        android:label="@string/menu_dogs"
+        tools:layout="@layout/dogslist_main" />
+</navigation>
