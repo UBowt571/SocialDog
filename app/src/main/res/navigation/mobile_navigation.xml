@@ -11,11 +11,11 @@
         android:label="@string/menu_home"
         tools:layout="@layout/activity_maps2" />
 
-    <!--<fragment
+    <fragment
         android:id="@+id/nav_gallery"
-        android:name="student.socialdog."
-        android:label="@string/menu_walks"
-        tools:layout="@layout/fragment_gallery" />-->
+        android:name="student.socialdog.PathsHistoryMaps"
+        android:label="@string/title_activity_paths_history_maps"
+        tools:layout="@layout/activity_paths_history_maps" />
 
     <fragment
         android:id="@+id/nav_friendslist"
