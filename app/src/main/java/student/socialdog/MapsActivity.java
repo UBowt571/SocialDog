@@ -211,6 +211,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                     walkDuration += walkUpdateDelay;
                 }
             }, walkUpdateDelay);
+
+            Toast.makeText(getContext(), "Bonne promenade !", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -237,6 +239,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
             SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
             String formattedDate = df.format(c);
+
+            Toast.makeText(getContext(), "Balade terminée !", Toast.LENGTH_SHORT).show();
         }
     }
 

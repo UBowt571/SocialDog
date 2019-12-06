@@ -259,6 +259,7 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
     {
         //TODO
         Log.e("deleteWalk", "BOOYAH");
+        Toast.makeText(getContext(), "Balade supprimée", Toast.LENGTH_SHORT).show();
     }
 
     void showPathInfos(int id)

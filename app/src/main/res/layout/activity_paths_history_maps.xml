@@ -86,7 +86,7 @@ android:gravity="center">
         android:layout_height="wrap_content"
         android:text="Supprimer"
         android:layout_alignParentBottom="true"
-        android:background="#ff0000"
+        android:background="#FC2E2E"
         ></Button>
 
 
