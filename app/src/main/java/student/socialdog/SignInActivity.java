@@ -14,6 +14,8 @@ import com.google.android.gms.common.SignInButton;
 
 public class SignInActivity extends AppCompatActivity {
 
+    GoogleSignInClient mGoogleSignInClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,7 +26,7 @@ public class SignInActivity extends AppCompatActivity {
                 .build();
 
         // Création du GoogleSignInClient avec les options de la variable gso (email uniquement).
-        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         findViewById(R.id.sign_in_button).setOnClickListener(this);
 
