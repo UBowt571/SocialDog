@@ -1,4 +1,4 @@
-package student.socialdog.ui.dogs;
+package student.socialdog;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -7,8 +7,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import student.socialdog.R;
 
 public class AddDog extends AppCompatActivity {
     @Override

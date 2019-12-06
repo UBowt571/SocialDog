@@ -58,11 +58,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.friends.AddFriend"
+            android:name=".AddFriend"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:name=".ui.dogs.AddDog"
+            android:name=".AddDog"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>
 

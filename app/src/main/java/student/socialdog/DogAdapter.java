@@ -1,4 +1,4 @@
-package student.socialdog.ui.dogs;
+package student.socialdog;
 
 import android.app.AlertDialog;
 import android.graphics.Color;
@@ -13,9 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-
-
-import student.socialdog.R;
 
 public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
     private ArrayList<DogObject> dogslisted = MainDogslist.dogslist;

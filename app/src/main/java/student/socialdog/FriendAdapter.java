@@ -1,4 +1,4 @@
-package student.socialdog.ui.friends;
+package student.socialdog;
 
 import android.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -10,8 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
-
-import student.socialdog.R;
 
 public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendViewHolder> {
 

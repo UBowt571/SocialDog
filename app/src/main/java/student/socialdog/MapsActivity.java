@@ -1,4 +1,4 @@
-package student.socialdog.ui.maps;
+package student.socialdog;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -42,9 +42,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import student.socialdog.R;
-import student.socialdog.util.assetLoader;
 
 
 public class MapsActivity extends Fragment implements OnMapReadyCallback, LocationListener {

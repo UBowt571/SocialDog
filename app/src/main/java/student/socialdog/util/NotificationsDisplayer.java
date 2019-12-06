@@ -11,6 +11,7 @@ import androidx.core.app.NotificationManagerCompat;
 import java.util.ArrayList;
 
 import student.socialdog.R;
+import student.socialdog.assetLoader;
 
 public class NotificationsDisplayer {
 
