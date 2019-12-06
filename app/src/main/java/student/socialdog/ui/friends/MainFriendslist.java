@@ -1,4 +1,4 @@
-package student.socialdog.friends;
+package student.socialdog.ui.friends;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +12,7 @@ import android.widget.Button;
 import java.util.ArrayList;
 
 import student.socialdog.R;
-import student.socialdog.assetLoader;
+import student.socialdog.util.assetLoader;
 
 public class MainFriendslist extends Fragment {
 

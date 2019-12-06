@@ -1,4 +1,4 @@
-package student.socialdog;
+package student.socialdog.util;
 
 import android.content.Context;
 import android.util.Log;
@@ -6,10 +6,9 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-import student.socialdog.friends.FriendAdapter;
+import student.socialdog.ui.friends.FriendAdapter;
 
 public class assetLoader {
     private static Context mContext = null;
@@ -29,7 +28,7 @@ public class assetLoader {
             byte[] buffer = new byte[size];
             is.read(buffer);
             is.close();
-            jsonString = new String(buffer, StandardCharsets.UTF_8);
+            jsonString = new String(buffer, "UTF-8");
             return new JSONObject(jsonString);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -85,7 +84,7 @@ public class assetLoader {
             for (int i = 0; i < jsonArrayFriends.length();i++){
                 JSONObject currentFriend = jsonArrayFriends.getJSONObject(i);
                 int imgResID = getResIDfromImageName(currentFriend.getString("ppic"),pcontext);
-                friends.add(new FriendAdapter.FriendsObject(currentFriend.getString("name"),currentFriend.getString("lastWalk"),imgResID));
+                friends.add(new FriendAdapter.FriendsObject(currentFriend.getString("mName"),currentFriend.getString("lastWalk"),imgResID));
             }
             return friends;
         }catch(Exception ex){
@@ -113,7 +112,7 @@ public class assetLoader {
      * @param context Context from which to load the ressources
      * @return int Return the ressource ID of image named "imageName" as an "int"
      */
-    private static int getResIDfromImageName(String imageName,Context context){
+    public static int getResIDfromImageName(String imageName,Context context){
         if(context!=null){
             return context.getResources().getIdentifier(imageName , "drawable", context.getPackageName());
         }

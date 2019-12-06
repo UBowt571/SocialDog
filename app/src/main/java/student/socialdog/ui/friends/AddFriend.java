@@ -1,4 +1,4 @@
-package student.socialdog.friends;
+package student.socialdog.ui.friends;
 
 import android.content.Intent;
 import android.os.Bundle;

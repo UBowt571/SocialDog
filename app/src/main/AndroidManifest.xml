@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <permission
         android:name="com.example.mapstest.permission.MAPS_RECEIVE"
@@ -30,6 +31,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service
+            android:name=".NotificationsHandlerService"
+            android:enabled="true"
+            android:exported="false"/>
         <!--
      The API key for Google Maps-based APIs is defined as a string resource.
      (See the file "res/values/google_maps_api.xml").
@@ -52,13 +57,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name=".friends.AddFriend"
+            android:name=".ui.friends.AddFriend"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:name=".dogs.AddDog"
+            android:name=".ui.dogs.AddDog"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>
 

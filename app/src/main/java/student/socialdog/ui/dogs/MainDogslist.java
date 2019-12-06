@@ -1,4 +1,4 @@
-package student.socialdog.dogs;
+package student.socialdog.ui.dogs;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -16,8 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import student.socialdog.R;
-import student.socialdog.dogs.AddDog;
-import student.socialdog.dogs.DogAdapter;
 
 public class MainDogslist extends Fragment {
 

@@ -1,4 +1,4 @@
-package student.socialdog.dogs;
+package student.socialdog.ui.dogs;
 
 import android.app.AlertDialog;
 import android.graphics.Color;
