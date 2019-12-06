@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.app.Dialog;
 
@@ -79,6 +80,11 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
     ArrayList<ArrayList<LatLng>> allPathsList;
     Marker startMarker;
     int currentPathId = 0;
+    TextView dateText;
+    TextView durationText;
+    ArrayList<String> dates;
+    ArrayList<String> durations;
+    boolean init = true;
 
     DatabaseReference pathsDB;
     DatabaseReference markersDB, markers_unapprovedDB, allMarkersDB;
@@ -104,10 +110,12 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
 
         Button nexWalkButton = rootView.findViewById(R.id.nextWalk);
         Button previousWalkButton = rootView.findViewById(R.id.previousWalk);
+        dateText = rootView.findViewById(R.id.dateText);
+        durationText = rootView.findViewById(R.id.durationText);
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         markersDB = database.getReference("markers");
         pathsDB = database.getReference("paths");
-
 
 
         nexWalkButton.setOnClickListener(new View.OnClickListener() {
@@ -135,6 +143,8 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         pathList = new ArrayList<>();
+        dates = new ArrayList<>();
+        durations = new ArrayList<>();
         allPathsList = new ArrayList<ArrayList<LatLng>>();
         // Lecture des marqueurs depuis database FireBase
         markersDB.addValueEventListener(new ValueEventListener() {
@@ -197,8 +207,18 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                     }
                     allPathsList.add(pathList);
                     pathList = new ArrayList<>();
+
+                    dates.add(current.getValue().get("date").toString());
+                    durations.add(current.getValue().get("duration").toString());
                 }
-                drawPathId(currentPathId);
+
+
+
+                if(init)
+                {
+                    drawPathId(currentPathId);
+                    init = false;
+                }
             }
 
             @Override
@@ -218,14 +238,24 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
     void nextWalk()
     {
         if(currentPathId < allPathsList.size()-1)
-        drawPathId(++currentPathId);
+        {
+            showPathInfos(++currentPathId);
+        }
+
 
     }
 
     void previousWalk()
     {
         if(currentPathId > 0)
-            drawPathId(--currentPathId);
+            showPathInfos(--currentPathId);
+    }
+
+    void showPathInfos(int id)
+    {
+        drawPathId(id);
+        dateText.setText("date : " + dates.get(id));
+        durationText.setText("duration : " + durations.get(id));
     }
 
     //Move Camera to the center of a walk
