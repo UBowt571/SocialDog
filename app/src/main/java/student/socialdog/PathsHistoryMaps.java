@@ -53,6 +53,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -78,6 +79,7 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
     ArrayList<LatLng> pathList;
     Polyline pathPolyline;
     ArrayList<ArrayList<LatLng>> allPathsList;
+    ArrayList<String> pathKeys;
     Marker startMarker;
     int currentPathId = 0;
     TextView dateText;
@@ -153,6 +155,7 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
         pathList = new ArrayList<>();
         dates = new ArrayList<>();
         durations = new ArrayList<>();
+        pathKeys = new ArrayList<>();
         allPathsList = new ArrayList<ArrayList<LatLng>>();
         // Lecture des marqueurs depuis database FireBase
         markersDB.addValueEventListener(new ValueEventListener() {
@@ -196,11 +199,14 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
         pathsDB.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 HashMap<String, Map> paths =  (HashMap<String,Map>)dataSnapshot.getValue();
                 Object lat;
                 Object lng;
                 pathList.clear();
                 allPathsList.clear();
+                dates.clear();
+                durations.clear();
                 for(Map.Entry<String, Map> current : paths.entrySet())
                 {
                     int i = 0;
@@ -213,11 +219,12 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                         //Log.e(TAG,"lng " + i + " : " + Double.toString(pathList.get(i).longitude));
                         i++;
                     }
-                    allPathsList.add(pathList);
+                    allPathsList.add(0,pathList);
                     pathList = new ArrayList<>();
 
-                    dates.add(current.getValue().get("date").toString());
-                    durations.add(current.getValue().get("duration").toString());
+                    dates.add(0,current.getValue().get("date").toString());
+                    durations.add(0,current.getValue().get("duration").toString());
+                    pathKeys.add(0,current.getKey());
                 }
 
                 if(init)
@@ -225,6 +232,11 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                     showPathInfos(currentPathId);
                     init = false;
                 }
+                /*
+                Collections.reverse(dates);
+                Collections.reverse(durations);
+                Collections.reverse(pathKeys);
+                Collections.reverse(allPathsList);*/
             }
 
             @Override
@@ -253,13 +265,27 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
     {
         if(currentPathId > 0)
             showPathInfos(--currentPathId);
+        Log.e("AAAAAAAAAAAAA","" + currentPathId);
     }
 
     void deleteWalk()
     {
-        //TODO
-        Log.e("deleteWalk", "BOOYAH");
-        Toast.makeText(getContext(), "Balade supprimée", Toast.LENGTH_SHORT).show();
+        if(allPathsList.size() >= 2)
+        {
+            Toast.makeText(getContext(), "Balade supprimée", Toast.LENGTH_SHORT).show();
+            removePath(currentPathId);
+            if(currentPathId == allPathsList.size()-1) showPathInfos(--currentPathId);
+            else showPathInfos(++currentPathId);
+        } else Toast.makeText(getContext(), "Impossible de supprimer : nombre mininal de balades atteint.", Toast.LENGTH_SHORT).show();
+
+    }
+
+    public void removePath(int id)
+    {
+        Log.e("removePath", "I REMOVED THE PATH " + id);
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        pathsDB = database.getReference("paths");
+        pathsDB.child(pathKeys.get(id)).setValue(null); //deletes
     }
 
     void showPathInfos(int id)
@@ -281,7 +307,7 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
         }
         medLat = medLat/pathFocus.size();
         medLng = medLng/pathFocus.size();
-        goToLocation(medLat,medLng,5);
+        goToLocation(medLat,medLng,12);
     }
 
 
@@ -482,7 +508,6 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
         }
         return false;
     }
-
 
     public void verifyMarkersUnapproved(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();

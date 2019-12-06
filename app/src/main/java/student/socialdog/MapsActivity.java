@@ -84,7 +84,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     Marker startMarker;
     boolean isWalking;
     final Handler walkHandler = new Handler();
-    final int walkUpdateDelay = 5000; //milliseconds
+    final int walkUpdateDelay = 1000; //milliseconds
     int currentPathId = 0;
     int walkDuration = 0; //milliseconds
 
@@ -243,6 +243,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             String formattedDate = df.format(c);
 
             Toast.makeText(getContext(), "Balade terminée !", Toast.LENGTH_SHORT).show();
+
+            savePath(pathList, formattedDate, duration);
         }
     }
 
@@ -372,6 +374,25 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
     }
 
+    //Svae a path and its infos into firebase
+    public void savePath(ArrayList<LatLng> points, String date, String duration)
+    {
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        pathsDB = database.getReference("paths").push();
+
+
+        HashMap<String, Object> map = new HashMap<>();
+        for(int i = 0; i < points.size(); i++)
+        {
+            map.put("date", date);
+            map.put("duration", duration);
+            map.put("latitude" + i, points.get(i).latitude);
+            map.put("longitude" + i, points.get(i).longitude);
+        }
+
+        pathsDB.setValue(map);
+    }
+
     public void addMarkerAtCurrentLocation(View view)
     {
         /***
@@ -426,7 +447,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
         });
         builder.show();
-
     }
 
     private void getLocationPermission(){
