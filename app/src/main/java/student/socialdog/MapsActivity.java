@@ -87,6 +87,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     final int walkUpdateDelay = 1000; //milliseconds
     int currentPathId = 0;
     int walkDuration = 0; //milliseconds
+    int maxId = 0;
 
     DatabaseReference pathsDB;
     DatabaseReference markersDB, markers_unapprovedDB;
@@ -188,6 +189,26 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             }
         });
         //verifyMarkersUnapproved();
+
+        pathsDB.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, Map> paths =  (HashMap<String,Map>)dataSnapshot.getValue();
+                int id = 0;
+                for(Map.Entry<String, Map> current : paths.entrySet())
+                {
+                    id = ((Long) current.getValue().get("id")).intValue();
+                    if (id > maxId) maxId = id;
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        });
 
         if(mLocationPermissionsGranted){
             getLocation();
@@ -384,6 +405,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         HashMap<String, Object> map = new HashMap<>();
         for(int i = 0; i < points.size(); i++)
         {
+            map.put("id", ++maxId);
             map.put("date", date);
             map.put("duration", duration);
             map.put("latitude" + i, points.get(i).latitude);
