@@ -217,6 +217,7 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
 
     void nextWalk()
     {
+        if(currentPathId < allPathsList.size()-1)
         drawPathId(++currentPathId);
 
     }

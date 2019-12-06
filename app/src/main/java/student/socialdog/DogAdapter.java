@@ -75,7 +75,7 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
             dograce.setText(dog.dograce);
             dogage.setText(dog.dogage);
             lastWalk.setText(dog.lastWalk);
-            profilepic.setImageResource(dog.dogpic);
+            //profilepic.setImageResource(dog.dogpic);
             color.setBackgroundColor(dog.dogcolor);
         }
     }
