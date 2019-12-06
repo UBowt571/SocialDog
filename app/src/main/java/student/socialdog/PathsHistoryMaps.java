@@ -198,7 +198,7 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                     allPathsList.add(pathList);
                     pathList = new ArrayList<>();
                 }
-                Log.e(TAG,Double.toString(allPathsList.get(0).get(0).latitude));
+                drawPathId(currentPathId);
             }
 
             @Override
@@ -210,7 +210,6 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
         if(mLocationPermissionsGranted){
             getLocation();
             goToLocation(currentLocation.latitude, currentLocation.longitude);
-            Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAAA");
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setCompassEnabled(true);
         }
@@ -218,14 +217,14 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
 
     void nextWalk()
     {
-        drawPath(allPathsList.get(++currentPathId));
+        drawPathId(++currentPathId);
 
     }
 
     void previousWalk()
     {
         if(currentPathId > 0)
-            drawPath(allPathsList.get(--currentPathId));
+            drawPathId(--currentPathId);
     }
 
     //Move Camera to the center of a walk
