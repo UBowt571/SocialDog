@@ -41,7 +41,7 @@ public class MainDogslist extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Récupération des chiens dans la database FireBase
                 HashMap<String,Map> dogsInDB = (HashMap<String,Map>) dataSnapshot.getValue();
-                dogslist = assetLoader.getDogs(dogsInDB);
+                dogslist = assetLoader.getDogs(getActivity().getApplicationContext(),dogsInDB);
 
                 // Création du recyclerView
                 RecyclerView recyclerView;

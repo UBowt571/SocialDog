@@ -40,7 +40,7 @@ public class MainFriendslist extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Récupération des amis dans la database FireBase
                 HashMap<String,Map> friendsInDB = (HashMap<String,Map>) dataSnapshot.getValue();
-                friendslist = assetLoader.getFriends(friendsInDB);
+                friendslist = assetLoader.getFriends(getActivity().getApplicationContext(),friendsInDB);
 
                 // Création du recyclerView
                 RecyclerView recyclerView;

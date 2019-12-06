@@ -63,7 +63,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     Bitmap bagIcon;
     Bitmap treeIcon;
     LatLng currentLocation;
-    DatabaseReference markersDB, markers_unapprovedDB, allMarkersDB;
+    DatabaseReference markersDB, markers_unapprovedDB;
     LocationManager locationManager;
 
     @Override
