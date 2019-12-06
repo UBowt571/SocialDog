@@ -110,6 +110,7 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
 
         Button nexWalkButton = rootView.findViewById(R.id.nextWalk);
         Button previousWalkButton = rootView.findViewById(R.id.previousWalk);
+        Button deleteWalkButton = rootView.findViewById(R.id.deleteWalk);
         dateText = rootView.findViewById(R.id.dateText);
         durationText = rootView.findViewById(R.id.durationText);
 
@@ -129,6 +130,13 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
             @Override
             public void onClick(View v) {
                 previousWalk();
+            }
+        });
+
+        deleteWalkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteWalk();
             }
         });
 
@@ -212,11 +220,9 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                     durations.add(current.getValue().get("duration").toString());
                 }
 
-
-
                 if(init)
                 {
-                    drawPathId(currentPathId);
+                    showPathInfos(currentPathId);
                     init = false;
                 }
             }
@@ -241,14 +247,18 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
         {
             showPathInfos(++currentPathId);
         }
-
-
     }
 
     void previousWalk()
     {
         if(currentPathId > 0)
             showPathInfos(--currentPathId);
+    }
+
+    void deleteWalk()
+    {
+        //TODO
+        Log.e("deleteWalk", "BOOYAH");
     }
 
     void showPathInfos(int id)
