@@ -1,18 +1,27 @@
 package student.socialdog;
 
-import android.graphics.Color;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import java.util.HashMap;
 
 public class AddDog extends AppCompatActivity {
+    DatabaseReference dogsDB;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_dog);
+
+        // Déclaration chemin Firebase
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        dogsDB = database.getReference("dogs").push();
 
         Button confirmDog = findViewById(R.id.confirmDog);
 
@@ -28,9 +37,21 @@ public class AddDog extends AppCompatActivity {
         EditText dogname = findViewById(R.id.dognamefield);
         EditText dograce = findViewById(R.id.dogracefield);
         EditText dogage = findViewById(R.id.dogagefield);
-        String sdogage = dogage.toString()+ " ans";
-        MainDogslist.dogslist.add(new DogAdapter.DogObject(dogname.toString(),dograce.toString(),sdogage, "Non actualisé",Color.argb(100, 179,107,0),R.drawable.dog1));
+        String sdogage = dogage.getText().toString()+ " ans";
 
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("dogname", dogname.getText().toString());
+        map.put("dograce", dograce.getText().toString());
+        map.put("dogage", sdogage);
+        map.put("lastWalk", "Non actualisé");
+        map.put("dogcolor", "1677746432");
+        map.put("dogpic", "dog2");
+
+        dogsDB.setValue(map);
+
+        Intent dogadded = new Intent();
+        dogadded.setAction("com.example.Broadcast");
+        sendBroadcast(dogadded);
         finish();
 
     }

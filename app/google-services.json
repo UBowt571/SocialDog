@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "785909676077",
+    "firebase_url": "https://socialdog-6effa.firebaseio.com",
+    "project_id": "socialdog-6effa",
+    "storage_bucket": "socialdog-6effa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:785909676077:android:18ab8a1ab5165cdd9de0a4",
+        "android_client_info": {
+          "package_name": "student.socialdog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "785909676077-p4ef174e62qcn4kuqv1gmn6mv6esgv2b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "student.socialdog",
+            "certificate_hash": "b6a601da6ff7ef11f514b3a34208896d85dcc52c"
+          }
+        },
+        {
+          "client_id": "785909676077-7lbl7ae267ai45glsf4349rnthv3chph.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "student.socialdog",
+            "certificate_hash": "418026af11416af2cb3b9fef113f66047d30a5be"
+          }
+        },
+        {
+          "client_id": "785909676077-88aoo38mb0bthqspu4jo60n53sgm8i5j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhX6n8ydv6WZ-zbG1sVm1SdyqTIXIdhVQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "785909676077-88aoo38mb0bthqspu4jo60n53sgm8i5j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

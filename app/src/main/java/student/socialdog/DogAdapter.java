@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.ArrayList;
 
 public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
@@ -80,7 +79,6 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
             dogage.setText(dog.dogage);
             lastWalk.setText(dog.lastWalk);
             profilepic.setImageResource(dog.dogpic);
-
             color.setBackgroundColor(dog.dogcolor);
         }
     }

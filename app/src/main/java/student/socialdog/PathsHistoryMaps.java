@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.app.Dialog;
 
@@ -36,6 +37,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -50,10 +52,9 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -62,39 +63,52 @@ import java.util.TimerTask;
 import java.util.Map;
 
 
-public class MapsActivity extends Fragment implements OnMapReadyCallback, LocationListener {
+public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, LocationListener {
 
     private GoogleMap mMap;
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final int DEFAULT_ZOOM = 14;
-    private static final String TAG = "MapsActivity";
+    private static final String TAG = "PathsHistoryMaps";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private Boolean mLocationPermissionsGranted = false;
-    static boolean verifyOK = false;
-    static boolean goForVerify = false;
     Bitmap bagIcon;
     Bitmap treeIcon;
     LatLng currentLocation;
     ArrayList<JSONObject> markersList;
     ArrayList<LatLng> pathList;
     Polyline pathPolyline;
+    ArrayList<Path> allPaths;
     Marker startMarker;
-    boolean isWalking;
-    final Handler walkHandler = new Handler();
-    final int walkUpdateDelay = 1000; //milliseconds
     int currentPathId = 0;
-    int walkDuration = 0; //milliseconds
+    TextView dateText;
+    TextView durationText;
+    boolean init = true;
     int maxId = 0;
 
     DatabaseReference pathsDB;
-    DatabaseReference markersDB, markers_unapprovedDB;
+    DatabaseReference markersDB, markers_unapprovedDB, allMarkersDB;
     LocationManager locationManager;
+
+    private class Path implements Comparable<Path>
+    {
+        int pathId;
+        String key;
+        String date;
+        String duration;
+        ArrayList<LatLng> points;
+
+        @Override
+        public int compareTo(Path p)
+        {
+            return(p.pathId - pathId);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_maps2, container, false);
+        View rootView = inflater.inflate(R.layout.activity_paths_history_maps, container, false);
         super.onCreate(savedInstanceState);
         if(isServicesOK()){
             getLocationPermission();
@@ -110,32 +124,35 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         BitmapDrawable treeBitmap=(BitmapDrawable)getResources().getDrawable(R.drawable.arbre);
         treeIcon = Bitmap.createScaledBitmap(treeBitmap.getBitmap(), width, height, false);
 
-        Button addMarkerButton = rootView.findViewById(R.id.addmarker);
-        Button startWalkButton = rootView.findViewById(R.id.startWalk);
-        Button endWalkButton = rootView.findViewById(R.id.endWalk);
+        Button nexWalkButton = rootView.findViewById(R.id.nextWalk);
+        Button previousWalkButton = rootView.findViewById(R.id.previousWalk);
+        Button deleteWalkButton = rootView.findViewById(R.id.deleteWalk);
+        dateText = rootView.findViewById(R.id.dateText);
+        durationText = rootView.findViewById(R.id.durationText);
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         markersDB = database.getReference("markers");
         pathsDB = database.getReference("paths");
 
 
-        addMarkerButton.setOnClickListener(new View.OnClickListener() {
+        nexWalkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addMarkerAtCurrentLocation(v);
+                nextWalk();
             }
         });
 
-        startWalkButton.setOnClickListener(new View.OnClickListener() {
+        previousWalkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startWalk();
+                previousWalk();
             }
         });
 
-        endWalkButton.setOnClickListener(new View.OnClickListener() {
+        deleteWalkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                endWalk();
+                deleteWalk();
             }
         });
 
@@ -149,6 +166,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        allPaths = new ArrayList<Path>();
         pathList = new ArrayList<>();
         // Lecture des marqueurs depuis database FireBase
         markersDB.addValueEventListener(new ValueEventListener() {
@@ -193,14 +212,43 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 HashMap<String, Map> paths =  (HashMap<String,Map>)dataSnapshot.getValue();
-                int id = 0;
+                Object lat;
+                Object lng;
+                allPaths.clear();
                 for(Map.Entry<String, Map> current : paths.entrySet())
                 {
-                    id = ((Long) current.getValue().get("id")).intValue();
-                    if (id > maxId) maxId = id;
+                    int i = 0;
+                    while (current.getValue().get("latitude" + i) != null)
+                    {
+                        lat = current.getValue().get("latitude" + i);
+                        lng = current.getValue().get("longitude" + i);
+                        pathList.add(new LatLng((Double)lat,(Double) lng));
+                        //Log.e(TAG,"lat " + i + " : " + Double.toString(pathList.get(i).latitude));
+                        //Log.e(TAG,"lng " + i + " : " + Double.toString(pathList.get(i).longitude));
+                        i++;
+                    }
+
+
+                    Path newPath = new Path();
+                    newPath.pathId = ((Long) current.getValue().get("id")).intValue();
+                    newPath.points = pathList;
+                    newPath.date = current.getValue().get("date").toString();
+                    newPath.duration = current.getValue().get("duration").toString();
+                    newPath.key = current.getKey();
+                    allPaths.add(newPath); //TO SORT;
+                    pathList = new ArrayList<>();
                 }
-
-
+                Collections.sort(allPaths);
+                if(init)
+                {
+                    showPathInfos(currentPathId);
+                    init = false;
+                }
+                /*
+                Collections.reverse(dates);
+                Collections.reverse(durations);
+                Collections.reverse(pathKeys);
+                Collections.reverse(allPathsList);*/
             }
 
             @Override
@@ -212,60 +260,65 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         if(mLocationPermissionsGranted){
             getLocation();
             goToLocation(currentLocation.latitude, currentLocation.longitude);
-            Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAAA");
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setCompassEnabled(true);
         }
     }
 
-    void startWalk()
+    void nextWalk()
     {
-        if (!isWalking)
+        if(currentPathId < allPaths.size()-1)
         {
-            walkDuration = 0;
-            pathList.clear();
-            isWalking = true;
-            walkHandler.postDelayed(new Runnable(){
-                public void run(){
-                    addLocationToPath();
-                    drawPath(pathList);
-                    walkHandler.postDelayed(this, walkUpdateDelay);
-                    walkDuration += walkUpdateDelay;
-                }
-            }, walkUpdateDelay);
-
-            Toast.makeText(getContext(), "Bonne promenade !", Toast.LENGTH_SHORT).show();
+            showPathInfos(++currentPathId);
         }
     }
 
-    void endWalk()
+    void previousWalk()
     {
-        if(isWalking)
+        if(currentPathId > 0)
+            showPathInfos(--currentPathId);
+    }
+
+    void deleteWalk()
+    {
+        if(allPaths.size() >= 2)
         {
-            isWalking = false;
-            walkHandler.removeCallbacksAndMessages(null);
+            Toast.makeText(getContext(), "Balade supprimée", Toast.LENGTH_SHORT).show();
+            removePath(currentPathId);
+            if(currentPathId == allPaths.size()-1) showPathInfos(--currentPathId);
+            else showPathInfos(++currentPathId);
+        } else Toast.makeText(getContext(), "Impossible de supprimer : nombre mininal de balades atteint.", Toast.LENGTH_SHORT).show();
 
-            //Get duration
-            String duration;
-            walkDuration = walkDuration/60000;
-            if(walkDuration < 1) duration = "< 1 min";
-            else
-            {
-                if(walkDuration > 59) duration = walkDuration/60 + " h " + walkDuration%60 + " min";
-                else duration = walkDuration + " min";
-            }
+    }
 
-            //Get date
-            Date c = Calendar.getInstance().getTime();
-            System.out.println("Current time => " + c);
+    public void removePath(int cId)
+    {
+        Log.e("removePath", "I REMOVED THE PATH " + cId);
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        pathsDB = database.getReference("paths");
+        pathsDB.child(allPaths.get(cId).key).setValue(null); //deletes a path in FB
+    }
 
-            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
-            String formattedDate = df.format(c);
+    void showPathInfos(int cId)
+    {
+        drawPathId(cId);
+        dateText.setText("date : " + allPaths.get(cId).date);
+        durationText.setText("duration : " + allPaths.get(cId).duration);
+    }
 
-            Toast.makeText(getContext(), "Balade terminée !", Toast.LENGTH_SHORT).show();
-
-            savePath(pathList, formattedDate, duration);
+    //Move Camera to the center of a walk
+    void placeCameraOnPath(ArrayList<LatLng> pathFocus)
+    {
+        double medLat = 0;
+        double medLng = 0;
+        for (int i = 0; i < pathFocus.size(); i++)
+        {
+            medLat += pathFocus.get(i).latitude;
+            medLng += pathFocus.get(i).longitude;
         }
+        medLat = medLat/pathFocus.size();
+        medLng = medLng/pathFocus.size();
+        goToLocation(medLat,medLng,12);
     }
 
 
@@ -290,14 +343,12 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         polylineOptions.width(10);
         polylineOptions.geodesic(false);
         pathPolyline = mMap.addPolyline(polylineOptions);
+        placeCameraOnPath(pointList);
     }
 
-
-    //Add current location to the path list
-    private void addLocationToPath()
+    void drawPathId(int id)
     {
-        getLocation();
-        pathList.add(currentLocation);
+        drawPath(allPaths.get(id).points);
     }
 
     private void getLocation()
@@ -329,13 +380,15 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         }
     }
 
-    String getAddress(double lat, double lng) {
+    public String getAddress(double lat, double lng) {
         Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
             Address obj = addresses.get(0);
 
-            return obj.getAddressLine(0);
+            String add = obj.getAddressLine(0);
+
+            return add;
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -392,81 +445,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
     }
 
-    //Svae a path and its infos into firebase
-    public void savePath(ArrayList<LatLng> points, String date, String duration)
-    {
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        pathsDB = database.getReference("paths").push();
-
-
-        HashMap<String, Object> map = new HashMap<>();
-        for(int i = 0; i < points.size(); i++)
-        {
-            map.put("id", ++maxId);
-            map.put("date", date);
-            map.put("duration", duration);
-            map.put("latitude" + i, points.get(i).latitude);
-            map.put("longitude" + i, points.get(i).longitude);
-        }
-
-        pathsDB.setValue(map);
-    }
-
-    private void addMarkerAtCurrentLocation(View view)
-    {
-        /***
-         * Un marqueur ne sera pas directement approuvé : il ira dans une base de marqueurs
-         * non approuvés.
-         * Une fois qu'il y a 2 marqueurs non approuvés très proches, ils sont réunis
-         * en un seul marqueur approuvé.
-         * C'est une méthode simpliste de vérification pour de l'informatique participative.
-         * Voir procédure verifyMarkersUnapproved()
-         */
-
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        markers_unapprovedDB = database.getReference("markers_unapproved").push();
-        getLocation();
-        String[] markersTypes = {"Espace vert", "Sac à déjection"};
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Quel type de lieu voulez-vous ajouter ?");
-        builder.setItems(markersTypes, new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Bitmap markerIcon;
-                String type="";
-                switch(which){
-                    case(0):
-                    default:
-                        markerIcon = treeIcon;
-                        type = "tree";
-                        break;
-                    case(1):
-                        markerIcon = bagIcon;
-                        type = "bag";
-                        break;
-                }
-                HashMap<String, Object> map = new HashMap<>();
-                map.put("latitude", currentLocation.latitude);
-                map.put("longitude", currentLocation.longitude);
-                map.put("type", type);
-
-                verifyMarkersUnapproved(currentLocation.latitude,currentLocation.longitude, type);
-                while(goForVerify==false);
-                if(verifyOK){
-                    // Ajout à la DB du nouveau marqueur
-                    markersDB.setValue(map);
-                }
-                else{
-                    markers_unapprovedDB = database.getReference("markers_unapproved").push();
-                    markers_unapprovedDB.setValue(map);
-                }
-            }
-
-        });
-        builder.show();
-    }
 
     private void getLocationPermission(){
         Log.d(TAG, "getLocationPermission: getting location permissions");
@@ -542,11 +520,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         return false;
     }
 
-
-    public void verifyMarkersUnapproved(double latiReceived, double longiReceived, final String typeReceived){
-        final double curLati = (double)Math.round((double)latiReceived * 100000d) / 100000d;
-        final double curLongi = (double)Math.round((double)longiReceived * 100000d) / 100000d;
-
+    public void verifyMarkersUnapproved(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         markers_unapprovedDB = database.getReference("markers_unapproved");
         markersDB = database.getReference("markers").push();
@@ -569,12 +543,32 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                     map.put("longitude", (double) longi);
                     markers_trunc.put(key.toString(),map);
                 }
+                HashMap<String, Map> markers_trunc2 = markers_trunc;
+                HashMap<String, Object> result  = new HashMap<>();
                 // On compare nos coordonnées arrondies
                 for(Map.Entry<String, Map> current : markers_trunc.entrySet())
                 {
-                    if((double)current.getValue().get("longitude") == curLongi
-                    && (double)current.getValue().get("latitude") == curLati){
-                        verifyOK = true;
+                    for(Map.Entry<String, Map> current2 : markers_trunc2.entrySet()){
+                        if(current.getValue().get("longitude") == current2.getValue().get("longitude")
+                                && current.getValue().get("latitude") == current2.getValue().get("latitude")
+                                && current.getValue().get("type") == current2.getValue().get("type")){
+                            // Moyenne des longitudes et latitudes retenues
+                            double lati = ((double) current.getValue().get("latitude") + (double) current2.getValue().get("latitude"))/2;
+                            double longi = ((double) current.getValue().get("longitude") + (double) current2.getValue().get("longitude"))/2;
+
+                            // Ajout à la DB du nouveau marqueur
+                            result.put("latitude", lati);
+                            result.put("longitude", longi);
+                            result.put("type", current.getValue().get("type"));
+                            markersDB.setValue(result);
+
+                            // On supprime les 2 entrées dans les marqueurs non approuvés
+                            /*markers_unapprovedDB = database.getReference("markers_unapproved/"+current.getKey());
+                            markers_unapprovedDB.removeValue();
+                            markers_unapprovedDB = database.getReference("markers_unapproved/"+current2.getKey());
+                            markers_unapprovedDB.removeValue();*/
+
+                        }
                     }
                 }
             }
@@ -583,7 +577,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             }
         });
-        goForVerify = true;
     }
 
 
