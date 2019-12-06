@@ -36,7 +36,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -330,15 +329,13 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         }
     }
 
-    public String getAddress(double lat, double lng) {
+    String getAddress(double lat, double lng) {
         Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
             Address obj = addresses.get(0);
 
-            String add = obj.getAddressLine(0);
-
-            return add;
+            return obj.getAddressLine(0);
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -415,7 +412,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         pathsDB.setValue(map);
     }
 
-    public void addMarkerAtCurrentLocation(View view)
+    private void addMarkerAtCurrentLocation(View view)
     {
         /***
          * Un marqueur ne sera pas directement approuvé : il ira dans une base de marqueurs

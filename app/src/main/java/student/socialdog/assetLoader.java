@@ -22,7 +22,7 @@ public class assetLoader {
      * @return JSONObject Return a JSONObject representation of the JSON file
      */
     public static JSONObject JSON(Context context,String filename) {
-        String jsonString = null;
+        String jsonString;
         try {
             InputStream is = context.getAssets().open(filename);
             mContext = context;
@@ -72,7 +72,6 @@ public class assetLoader {
      * @param pcontext Context to use to load JSON file. Might be usefull if mContext from assetLoader isn't initialized yet
      * @return ArrayList<FriendAdapter.FriendsObject> Return a list of FriendAdapter.FriendsObject
      */
-
     public static ArrayList<FriendAdapter.FriendsObject> getFriends(Context pcontext, HashMap<String,Map> friendsInDB) {
             ArrayList<FriendAdapter.FriendsObject> friendslist = new ArrayList<>();
         for(Map.Entry<String, Map> current : friendsInDB.entrySet()) {
@@ -109,7 +108,7 @@ public class assetLoader {
      * @param context Context from which to load the ressources
      * @return int Return the ressource ID of image named "imageName" as an "int"
      */
-    private static int getResIDfromImageName(String imageName,Context context){
+    public static int getResIDfromImageName(String imageName,Context context){
         if(context!=null){
             return context.getResources().getIdentifier(imageName , "drawable", context.getPackageName());
         }
