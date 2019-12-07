@@ -67,7 +67,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
             currentfriend = friend;
             name.setText(friend.name);
             lastWalk.setText(friend.lastWalk);
-            //profilepic.setImageResource(friend.profilepic);
+            profilepic.setImageResource(friend.profilepic);
         }
     }
 
