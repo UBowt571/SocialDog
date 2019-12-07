@@ -36,7 +36,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -84,9 +83,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     Marker startMarker;
     boolean isWalking;
     final Handler walkHandler = new Handler();
-    final int walkUpdateDelay = 5000; //milliseconds
+    final int walkUpdateDelay = 1000; //milliseconds
     int currentPathId = 0;
     int walkDuration = 0; //milliseconds
+    int maxId = 0;
 
     DatabaseReference pathsDB;
     DatabaseReference markersDB, markers_unapprovedDB;
@@ -189,6 +189,26 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         });
         //verifyMarkersUnapproved();
 
+        pathsDB.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, Map> paths =  (HashMap<String,Map>)dataSnapshot.getValue();
+                int id = 0;
+                for(Map.Entry<String, Map> current : paths.entrySet())
+                {
+                    id = ((Long) current.getValue().get("id")).intValue();
+                    if (id > maxId) maxId = id;
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        });
+
         if(mLocationPermissionsGranted){
             getLocation();
             goToLocation(currentLocation.latitude, currentLocation.longitude);
@@ -243,6 +263,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             String formattedDate = df.format(c);
 
             Toast.makeText(getContext(), "Balade terminée !", Toast.LENGTH_SHORT).show();
+
+            savePath(pathList, formattedDate, duration);
         }
     }
 
@@ -307,15 +329,13 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         }
     }
 
-    public String getAddress(double lat, double lng) {
+    String getAddress(double lat, double lng) {
         Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
             Address obj = addresses.get(0);
 
-            String add = obj.getAddressLine(0);
-
-            return add;
+            return obj.getAddressLine(0);
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -372,7 +392,27 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
     }
 
-    public void addMarkerAtCurrentLocation(View view)
+    //Svae a path and its infos into firebase
+    public void savePath(ArrayList<LatLng> points, String date, String duration)
+    {
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        pathsDB = database.getReference("paths").push();
+
+
+        HashMap<String, Object> map = new HashMap<>();
+        for(int i = 0; i < points.size(); i++)
+        {
+            map.put("id", ++maxId);
+            map.put("date", date);
+            map.put("duration", duration);
+            map.put("latitude" + i, points.get(i).latitude);
+            map.put("longitude" + i, points.get(i).longitude);
+        }
+
+        pathsDB.setValue(map);
+    }
+
+    private void addMarkerAtCurrentLocation(View view)
     {
         /***
          * Un marqueur ne sera pas directement approuvé : il ira dans une base de marqueurs
@@ -426,7 +466,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
         });
         builder.show();
-
     }
 
     private void getLocationPermission(){

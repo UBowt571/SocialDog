@@ -53,6 +53,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -77,18 +79,32 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
     ArrayList<JSONObject> markersList;
     ArrayList<LatLng> pathList;
     Polyline pathPolyline;
-    ArrayList<ArrayList<LatLng>> allPathsList;
+    ArrayList<Path> allPaths;
     Marker startMarker;
     int currentPathId = 0;
     TextView dateText;
     TextView durationText;
-    ArrayList<String> dates;
-    ArrayList<String> durations;
     boolean init = true;
+    int maxId = 0;
 
     DatabaseReference pathsDB;
     DatabaseReference markersDB, markers_unapprovedDB, allMarkersDB;
     LocationManager locationManager;
+
+    private class Path implements Comparable<Path>
+    {
+        int pathId;
+        String key;
+        String date;
+        String duration;
+        ArrayList<LatLng> points;
+
+        @Override
+        public int compareTo(Path p)
+        {
+            return(p.pathId - pathId);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -150,10 +166,9 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        allPaths = new ArrayList<Path>();
         pathList = new ArrayList<>();
-        dates = new ArrayList<>();
-        durations = new ArrayList<>();
-        allPathsList = new ArrayList<ArrayList<LatLng>>();
         // Lecture des marqueurs depuis database FireBase
         markersDB.addValueEventListener(new ValueEventListener() {
             @Override
@@ -199,8 +214,7 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                 HashMap<String, Map> paths =  (HashMap<String,Map>)dataSnapshot.getValue();
                 Object lat;
                 Object lng;
-                pathList.clear();
-                allPathsList.clear();
+                allPaths.clear();
                 for(Map.Entry<String, Map> current : paths.entrySet())
                 {
                     int i = 0;
@@ -213,18 +227,28 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                         //Log.e(TAG,"lng " + i + " : " + Double.toString(pathList.get(i).longitude));
                         i++;
                     }
-                    allPathsList.add(pathList);
+
+
+                    Path newPath = new Path();
+                    newPath.pathId = ((Long) current.getValue().get("id")).intValue();
+                    newPath.points = pathList;
+                    newPath.date = current.getValue().get("date").toString();
+                    newPath.duration = current.getValue().get("duration").toString();
+                    newPath.key = current.getKey();
+                    allPaths.add(newPath); //TO SORT;
                     pathList = new ArrayList<>();
-
-                    dates.add(current.getValue().get("date").toString());
-                    durations.add(current.getValue().get("duration").toString());
                 }
-
+                Collections.sort(allPaths);
                 if(init)
                 {
                     showPathInfos(currentPathId);
                     init = false;
                 }
+                /*
+                Collections.reverse(dates);
+                Collections.reverse(durations);
+                Collections.reverse(pathKeys);
+                Collections.reverse(allPathsList);*/
             }
 
             @Override
@@ -243,7 +267,7 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
 
     void nextWalk()
     {
-        if(currentPathId < allPathsList.size()-1)
+        if(currentPathId < allPaths.size()-1)
         {
             showPathInfos(++currentPathId);
         }
@@ -257,16 +281,29 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
 
     void deleteWalk()
     {
-        //TODO
-        Log.e("deleteWalk", "BOOYAH");
-        Toast.makeText(getContext(), "Balade supprimée", Toast.LENGTH_SHORT).show();
+        if(allPaths.size() >= 2)
+        {
+            Toast.makeText(getContext(), "Balade supprimée", Toast.LENGTH_SHORT).show();
+            removePath(currentPathId);
+            if(currentPathId == allPaths.size()-1) showPathInfos(--currentPathId);
+            else showPathInfos(++currentPathId);
+        } else Toast.makeText(getContext(), "Impossible de supprimer : nombre mininal de balades atteint.", Toast.LENGTH_SHORT).show();
+
     }
 
-    void showPathInfos(int id)
+    public void removePath(int cId)
     {
-        drawPathId(id);
-        dateText.setText("date : " + dates.get(id));
-        durationText.setText("duration : " + durations.get(id));
+        Log.e("removePath", "I REMOVED THE PATH " + cId);
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        pathsDB = database.getReference("paths");
+        pathsDB.child(allPaths.get(cId).key).setValue(null); //deletes a path in FB
+    }
+
+    void showPathInfos(int cId)
+    {
+        drawPathId(cId);
+        dateText.setText("date : " + allPaths.get(cId).date);
+        durationText.setText("duration : " + allPaths.get(cId).duration);
     }
 
     //Move Camera to the center of a walk
@@ -281,7 +318,7 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
         }
         medLat = medLat/pathFocus.size();
         medLng = medLng/pathFocus.size();
-        goToLocation(medLat,medLng,5);
+        goToLocation(medLat,medLng,12);
     }
 
 
@@ -311,7 +348,7 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
 
     void drawPathId(int id)
     {
-        drawPath(allPathsList.get(id));
+        drawPath(allPaths.get(id).points);
     }
 
     private void getLocation()
