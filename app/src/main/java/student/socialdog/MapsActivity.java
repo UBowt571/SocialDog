@@ -406,6 +406,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             map.put("id", ++maxId);
             map.put("date", date);
             map.put("duration", duration);
+            map.put("userkey",MainActivity.userKey);
             map.put("latitude" + i, points.get(i).latitude);
             map.put("longitude" + i, points.get(i).longitude);
         }
