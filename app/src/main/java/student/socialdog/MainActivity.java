@@ -1,12 +1,19 @@
 package student.socialdog;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -26,6 +33,18 @@ public class MainActivity extends AppCompatActivity {   // implements Navigation
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+
+        // Récupération des informations du compte Google pour les afficher au dessus du menu
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        TextView title = navigationView.getHeaderView(0).findViewById(R.id.title_textView);
+        TextView subtitle = navigationView.getHeaderView(0).findViewById(R.id.subtitle_textView);
+        ImageView imgv = navigationView.getHeaderView(0).findViewById(R.id.headerImageView);
+        title.setText(account.getDisplayName());
+        subtitle.setText(account.getEmail());
+        String imgurl = account.getPhotoUrl().toString();
+        Glide.with(this).load(imgurl).into(imgv);
+
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -36,7 +55,6 @@ public class MainActivity extends AppCompatActivity {   // implements Navigation
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-        //navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -45,17 +63,4 @@ public class MainActivity extends AppCompatActivity {   // implements Navigation
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
-
-//    @Override
-//    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-//        Log.d("------------", "onNavigationItemSelected: "+menuItem.getItemId());
-//        Fragment fragment = null;
-//        switch (menuItem.getItemId()){
-//          case R.id.nav_friendslist :
-//                fragment = new MapsActivity();
-//        }
-//        FragmentManager FM = getSupportFragmentManager();
-//        FM.beginTransaction();
-//        return false;
-//    }
 }
