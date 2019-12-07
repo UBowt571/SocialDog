@@ -19,62 +19,33 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Entrez les informations du nouvel ami : "
+        android:text="Ajoutez un nouvel ami en entrant son adresse e-mail : "
         android:padding="30dp"
         android:textStyle="bold"
         android:textSize="28dp"/>
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="50dp">
+        android:orientation="vertical"
+        android:padding="70dp">
 
-        <LinearLayout
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp">
+            android:text="Adresse e-mail du nouvel ami : "
+            android:textSize="20dp"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Prénom de l'ami : "
-                android:textSize="20dp"/>
-
-            <EditText
-                android:id="@+id/firstnamefield"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Entrer le prénom de l'ami" />
-        </LinearLayout>
-
-        <LinearLayout
+        <EditText
+            android:id="@+id/emailfield"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Nom de l'ami : "
-                android:textSize="20dp"/>
-
-            <EditText
-                android:id="@+id/lastnamefield"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Entrer le nom de l'ami" />
-
-
-        </LinearLayout>
-
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="" />
     </LinearLayout>
+
+
 
     <Button
         android:id="@+id/confirmFriend"
@@ -84,5 +55,15 @@
         android:padding="30dp"
         android:text="Ajouter cet ami"
         android:layout_gravity="center_horizontal"/>
+
+    <Button
+        android:id="@+id/returnButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_marginTop="30dp"
+        android:maxWidth="200dp"
+        android:padding="10dp"
+        android:text="Retour" />
 
 </LinearLayout>

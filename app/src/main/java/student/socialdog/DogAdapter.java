@@ -47,7 +47,7 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
         private final ImageView profilepic;
         private final LinearLayout color;
 
-        DogObject currentdog = new DogObject("","","1 an", "",Color.WHITE, 0);
+        DogObject currentdog = new DogObject("","","1 an", "","",Color.WHITE, 0);
 
         DogViewHolder(final View itemView) {
             super(itemView);
@@ -88,16 +88,18 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
         String dograce;
         String dogage;
         String lastWalk;
+        String dogowner;
         int dogcolor;
         int dogpic;
 
 
-        DogObject(String pname, String pdograce, String pdogage, String plastWalk, int pdogcolor, int pdogpic){
+        DogObject(String pname, String pdograce, String pdogage, String plastWalk, String pdogowner, int pdogcolor, int pdogpic){
 
             this.dogname = pname;
             this.dograce = pdograce;
             this.dogage = pdogage;
             this.lastWalk = plastWalk;
+            this.dogowner = pdogowner;
             this.dogcolor = pdogcolor;
             this.dogpic = pdogpic;
         }

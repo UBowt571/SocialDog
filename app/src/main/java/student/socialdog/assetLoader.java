@@ -127,8 +127,8 @@ public class assetLoader {
      * Returns an ArrayList of DogAdapter.DogObject
      * @return ArrayList<DogAdapter.DogObject> Return a list of DogAdapter.DogObject
      */
-    public static ArrayList<DogAdapter.DogObject> getDogs(Map<String,Map> dogsInDB){
-        return getDogs(mContext,dogsInDB);
+    public static ArrayList<DogAdapter.DogObject> getMyDogs(Map<String,Map> dogsInDB){
+        return getMyDogs(mContext,dogsInDB);
     }
 
     /**
@@ -137,21 +137,23 @@ public class assetLoader {
      * @return ArrayList<DogAdapter.DogObject> Return a list of DogAdapter.DogObject
      */
 
-    public static ArrayList<DogAdapter.DogObject> getDogs(Context pcontext,Map<String,Map> dogsInDB) {
+    public static ArrayList<DogAdapter.DogObject> getMyDogs(Context pcontext,Map<String,Map> dogsInDB) {
         ArrayList<DogAdapter.DogObject> dogslist = new ArrayList<>();
         for(Map.Entry<String, Map> current : dogsInDB.entrySet()) {
-            try{
-                Object dogname = current.getValue().get("dogname");
-                Object dograce = current.getValue().get("dograce");
-                Object dogage = current.getValue().get("dogage");
-                Object lastWalk = current.getValue().get("lastWalk");
-                Object dogcolor = current.getValue().get("dogcolor");
-                int idogcolor = Integer.parseInt(dogcolor.toString());
-                Object dogpic = current.getValue().get("dogpic");
-                int imgResID = getResIDfromImageName(dogpic.toString(),pcontext);
-                dogslist.add(new DogAdapter.DogObject((String) dogname,(String) dograce,(String) dogage,(String) lastWalk, idogcolor,imgResID));
-            } catch(Exception ex){
-                ex.printStackTrace();
+            if(current.getValue().get("dogowner").toString().equals(MainActivity.userKey)){
+                try{
+                    Object dogname = current.getValue().get("dogname");
+                    Object dograce = current.getValue().get("dograce");
+                    Object dogage = current.getValue().get("dogage");
+                    Object lastWalk = current.getValue().get("lastWalk");
+                    Object dogcolor = current.getValue().get("dogcolor");
+                    int idogcolor = Integer.parseInt(dogcolor.toString());
+                    Object dogpic = current.getValue().get("dogpic");
+                    int imgResID = getResIDfromImageName(dogpic.toString(),pcontext);
+                    dogslist.add(new DogAdapter.DogObject((String) dogname,(String) dograce,(String) dogage,(String) lastWalk,MainActivity.userKey, idogcolor,imgResID));
+                } catch(Exception ex){
+                    ex.printStackTrace();
+                }
             }
         }
         return dogslist;
@@ -189,6 +191,35 @@ public class assetLoader {
             }
         }
         return usersList;
+    }
+
+
+
+
+
+    public static ArrayList<DogAdapter.DogObject> getAllDogs(Map<String,Map> dogsInDB){
+        return getAllDogs(mContext,dogsInDB);
+    }
+
+
+    public static ArrayList<DogAdapter.DogObject> getAllDogs(Context pcontext,Map<String,Map> dogsInDB) {
+        ArrayList<DogAdapter.DogObject> dogslist = new ArrayList<>();
+        for(Map.Entry<String, Map> current : dogsInDB.entrySet()) {
+            try{
+                Object dogname = current.getValue().get("dogname");
+                Object dograce = current.getValue().get("dograce");
+                Object dogage = current.getValue().get("dogage");
+                Object lastWalk = current.getValue().get("lastWalk");
+                Object dogcolor = current.getValue().get("dogcolor");
+                int idogcolor = Integer.parseInt(dogcolor.toString());
+                Object dogpic = current.getValue().get("dogpic");
+                int imgResID = getResIDfromImageName(dogpic.toString(),pcontext);
+                dogslist.add(new DogAdapter.DogObject((String) dogname,(String) dograce,(String) dogage,(String) lastWalk,MainActivity.userKey, idogcolor,imgResID));
+            } catch(Exception ex){
+                ex.printStackTrace();
+            }
+        }
+        return dogslist;
     }
 
 }

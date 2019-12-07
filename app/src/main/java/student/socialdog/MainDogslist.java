@@ -24,7 +24,9 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
 public class MainDogslist extends Fragment {
 
     static ArrayList<DogAdapter.DogObject> dogslist = new ArrayList<>();
-    DatabaseReference dogsDB;
+    static int alldogscount = 0;
+    DatabaseReference allDB;
+    DatabaseReference usersDB;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -33,15 +35,23 @@ public class MainDogslist extends Fragment {
 
         // Déclaration chemin Firebase
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        dogsDB = database.getReference("dogs");
+        allDB = database.getReference();
+        usersDB = database.getReference("users");
 
         // Listener : on attend les données de Firebase PUIS on créé le recyclerView
-        dogsDB.addValueEventListener(new ValueEventListener() {
+        allDB.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String,HashMap> allInDB = (HashMap<String,HashMap>) dataSnapshot.getValue();
+                HashMap<String,Map> usersInDB = allInDB.get("users");
+                HashMap<String,Map> dogsInDB = allInDB.get("dogs");
+                ArrayList<User.UserObject> usersList = new ArrayList<>();
+                usersList = assetLoader.getUsers(getActivity().getApplicationContext(),usersInDB);
+
                 // Récupération des chiens dans la database FireBase
-                HashMap<String,Map> dogsInDB = (HashMap<String,Map>) dataSnapshot.getValue();
-                dogslist = assetLoader.getDogs(getActivity().getApplicationContext(),dogsInDB);
+                ArrayList<DogAdapter.DogObject> alldogs = assetLoader.getAllDogs(getActivity().getApplicationContext(),dogsInDB);
+                alldogscount = alldogs.size();
+                dogslist = assetLoader.getMyDogs(getActivity().getApplicationContext(),dogsInDB);
 
                 // Création du recyclerView
                 RecyclerView recyclerView;
