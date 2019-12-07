@@ -9,15 +9,18 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 
 public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendViewHolder> {
 
-    private ArrayList<FriendsObject> friendslisted = MainFriendslist.friendslist;
+    private ArrayList<User.UserObject> friendslisted = MainFriendslist.myFriendsList;
 
     @Override
     public int getItemCount() {
-        ArrayList<FriendsObject> friendslistedtest = MainFriendslist.friendslist;
+        ArrayList<User.UserObject> friendslistedtest = MainFriendslist.myFriendsList;
         return friendslistedtest.size();
     }
 
@@ -33,22 +36,24 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
 
     @Override
     public void onBindViewHolder(FriendViewHolder holder, int position) {
-        FriendsObject friend = friendslisted.get(position);
+        User.UserObject friend = friendslisted.get(position);
         holder.display(friend);
     }
 
     class FriendViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView name;
+        private final TextView displayedName;
+        private final TextView email;
         private final TextView lastWalk;
         private final ImageView profilepic;
 
-        FriendsObject currentfriend = new FriendsObject("","",0);
+        User.UserObject currentfriend = new User.UserObject("","","","","",null,null);
 
         FriendViewHolder(final View itemView) {
             super(itemView);
 
-            name = itemView.findViewById(R.id.name);
+            displayedName = itemView.findViewById(R.id.name);
+            email = itemView.findViewById(R.id.email);
             lastWalk = itemView.findViewById(R.id.lastWalk);
             profilepic = itemView.findViewById(R.id.friendpic);
 
@@ -56,32 +61,19 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
                 @Override
                 public void onClick(View view) {
                     new AlertDialog.Builder(itemView.getContext())
-                            .setTitle(currentfriend.name)
+                            .setTitle(currentfriend.displayedName)
                             .setMessage(currentfriend.lastWalk)
                             .show();
                 }
             });
         }
 
-        void display(FriendsObject friend) {
+        void display(User.UserObject friend) {
             currentfriend = friend;
-            name.setText(friend.name);
+            displayedName.setText(friend.displayedName);
+            email.setText(friend.email);
             lastWalk.setText(friend.lastWalk);
-            profilepic.setImageResource(friend.profilepic);
+            Glide.with(itemView.getContext()).load(friend.photoURL).into(profilepic);
         }
     }
-
-    public static class FriendsObject {
-        public String name;
-        String lastWalk;
-        int profilepic;
-
-        public FriendsObject(String pname, String plastWalk, int pprofilepic){
-            this.name = pname;
-            this.lastWalk = plastWalk;
-            this.profilepic = pprofilepic;
-        }
-    }
-
-
 }
