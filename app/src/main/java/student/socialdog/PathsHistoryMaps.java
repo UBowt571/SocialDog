@@ -85,6 +85,8 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
     TextView dateText;
     TextView durationText;
     boolean init = true;
+    boolean emptyHistory = false; //true if no path in history
+
 
     DatabaseReference pathsDB;
     DatabaseReference markersDB, markers_unapprovedDB, allMarkersDB;
@@ -238,8 +240,10 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                         pathList = new ArrayList<>();
                     }
                 }
+                emptyHistory = (allPaths.size() == 0);
+                Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + emptyHistory);
                 Collections.sort(allPaths);
-                if(init)
+                if(init && !emptyHistory)
                 {
                     showPathInfos(currentPathId);
                     init = false;
@@ -262,36 +266,56 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
 
     void nextWalk()
     {
-        if(currentPathId < allPaths.size()-1)
+        if(!emptyHistory)
         {
-            showPathInfos(++currentPathId);
-        }
+            if(currentPathId < allPaths.size()-1)
+            {
+                showPathInfos(++currentPathId);
+            }
+        } else Toast.makeText(getContext(), "Aucune balade dans l'historique", Toast.LENGTH_SHORT).show();
+
     }
 
     void previousWalk()
     {
-        if(currentPathId > 0)
-            showPathInfos(--currentPathId);
+        if(!emptyHistory)
+        {
+            if(currentPathId > 0)
+                showPathInfos(--currentPathId);
+        } else Toast.makeText(getContext(), "Aucune balade dans l'historique", Toast.LENGTH_SHORT).show();
     }
 
     void deleteWalk()
     {
-        if(allPaths.size() >= 2)
+        if(!emptyHistory)
         {
             Toast.makeText(getContext(), "Balade supprimée", Toast.LENGTH_SHORT).show();
             removePath(currentPathId);
-            if(currentPathId == allPaths.size()-1) showPathInfos(--currentPathId);
-            else showPathInfos(++currentPathId);
-        } else Toast.makeText(getContext(), "Impossible de supprimer : nombre mininal de balades atteint.", Toast.LENGTH_SHORT).show();
+            if(allPaths.size() > 1)
+            {
+                if(currentPathId == allPaths.size()-1) showPathInfos(--currentPathId);
+                else showPathInfos(++currentPathId);
+            }
+            else
+            {
+                if (pathPolyline != null) pathPolyline.remove(); //Reset the polyline
+                if (startMarker != null) startMarker.remove();
+            }
+
+        } else Toast.makeText(getContext(), "Aucune balade dans l'historique", Toast.LENGTH_SHORT).show();
 
     }
 
     public void removePath(int cId)
     {
-        Log.e("removePath", "I REMOVED THE PATH " + cId);
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        pathsDB = database.getReference("paths");
-        pathsDB.child(allPaths.get(cId).key).setValue(null); //deletes a path in FB
+        if(!emptyHistory)
+        {
+            Log.e("removePath", "I REMOVED THE PATH " + cId);
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            pathsDB = database.getReference("paths");
+            pathsDB.child(allPaths.get(cId).key).setValue(null); //deletes a path in FB
+        }
+
     }
 
     void showPathInfos(int cId)
@@ -343,7 +367,11 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
 
     void drawPathId(int id)
     {
-        drawPath(allPaths.get(id).points);
+        if(!emptyHistory)
+        {
+            Log.e(TAG, "IDDDDDDDDDDDDDDDDDDDDD" + id);
+            drawPath(allPaths.get(id).points);
+        }
     }
 
     private void getLocation()
