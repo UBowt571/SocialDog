@@ -205,7 +205,6 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             }
         });
-        //verifyMarkersUnapproved();
 
         pathsDB.addValueEventListener(new ValueEventListener() {
             @Override
@@ -216,26 +215,28 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                 allPaths.clear();
                 for(Map.Entry<String, Map> current : paths.entrySet())
                 {
-                    int i = 0;
-                    while (current.getValue().get("latitude" + i) != null)
-                    {
-                        lat = current.getValue().get("latitude" + i);
-                        lng = current.getValue().get("longitude" + i);
-                        pathList.add(new LatLng((Double)lat,(Double) lng));
-                        //Log.e(TAG,"lat " + i + " : " + Double.toString(pathList.get(i).latitude));
-                        //Log.e(TAG,"lng " + i + " : " + Double.toString(pathList.get(i).longitude));
-                        i++;
+                    if(current.getValue().get("userkey").toString().equals(MainActivity.userKey)){
+                        int i = 0;
+                        while (current.getValue().get("latitude" + i) != null)
+                        {
+                            lat = current.getValue().get("latitude" + i);
+                            lng = current.getValue().get("longitude" + i);
+                            pathList.add(new LatLng((Double)lat,(Double) lng));
+                            //Log.e(TAG,"lat " + i + " : " + Double.toString(pathList.get(i).latitude));
+                            //Log.e(TAG,"lng " + i + " : " + Double.toString(pathList.get(i).longitude));
+                            i++;
+                        }
+
+
+                        Path newPath = new Path();
+                        newPath.pathId = ((Long) current.getValue().get("id")).intValue();
+                        newPath.points = pathList;
+                        newPath.date = current.getValue().get("date").toString();
+                        newPath.duration = current.getValue().get("duration").toString();
+                        newPath.key = current.getKey();
+                        allPaths.add(newPath); //TO SORT;
+                        pathList = new ArrayList<>();
                     }
-
-
-                    Path newPath = new Path();
-                    newPath.pathId = ((Long) current.getValue().get("id")).intValue();
-                    newPath.points = pathList;
-                    newPath.date = current.getValue().get("date").toString();
-                    newPath.duration = current.getValue().get("duration").toString();
-                    newPath.key = current.getKey();
-                    allPaths.add(newPath); //TO SORT;
-                    pathList = new ArrayList<>();
                 }
                 Collections.sort(allPaths);
                 if(init)
@@ -243,11 +244,6 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                     showPathInfos(currentPathId);
                     init = false;
                 }
-                /*
-                Collections.reverse(dates);
-                Collections.reverse(durations);
-                Collections.reverse(pathKeys);
-                Collections.reverse(allPathsList);*/
             }
 
             @Override

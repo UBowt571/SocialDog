@@ -50,6 +50,15 @@
                 tools:text="Personnage" />
 
             <TextView
+                android:id="@+id/email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                tools:text="email@email.com" />
+
+            <TextView
                 android:id="@+id/lastWalk"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

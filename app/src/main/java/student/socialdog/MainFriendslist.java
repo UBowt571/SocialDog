@@ -22,8 +22,8 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class MainFriendslist extends Fragment {
 
-    static ArrayList<FriendAdapter.FriendsObject> friendslist = new ArrayList<>();
-    DatabaseReference friendsDB;
+    static ArrayList<User.UserObject> myFriendsList = new ArrayList<>();
+    DatabaseReference usersDB;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
@@ -32,15 +32,18 @@ public class MainFriendslist extends Fragment {
 
         // Déclaration chemin Firebase
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        friendsDB = database.getReference("friends");
+        usersDB = database.getReference("users");
 
         // Listener : on attend les données de Firebase PUIS on créé le recyclerView
-        friendsDB.addValueEventListener(new ValueEventListener() {
+        usersDB.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Récupération des amis dans la database FireBase
-                HashMap<String,Map> friendsInDB = (HashMap<String,Map>) dataSnapshot.getValue();
-                friendslist = assetLoader.getFriends(getActivity().getApplicationContext(),friendsInDB);
+                HashMap<String, Map> usersInDB = (HashMap<String,Map>) dataSnapshot.getValue();
+                ArrayList<User.UserObject> usersList = new ArrayList<>();
+                usersList = assetLoader.getUsers(getActivity().getApplicationContext(),usersInDB);
+                myFriendsList = assetLoader.getFriends(getActivity().getApplicationContext(),usersList);
+
 
                 // Création du recyclerView
                 RecyclerView recyclerView;
