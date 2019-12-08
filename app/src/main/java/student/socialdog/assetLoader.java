@@ -75,6 +75,7 @@ public class assetLoader {
      * @param pcontext Context to use to load JSON file. Might be usefull if mContext from assetLoader isn't initialized yet
      * @return ArrayList<FriendAdapter.FriendsObject> Return a list of FriendAdapter.FriendsObject
      */
+
     public static ArrayList<User.UserObject> getFriends(Context pcontext, ArrayList<User.UserObject> usersList) {
         ArrayList<String> myFriendsListStr = new ArrayList<>();
         ArrayList<User.UserObject> myFriendsListObj = new ArrayList<>();

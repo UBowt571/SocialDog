@@ -92,7 +92,6 @@ public class DogAdapter extends RecyclerView.Adapter<DogAdapter.DogViewHolder> {
         int dogcolor;
         int dogpic;
 
-
         DogObject(String pname, String pdograce, String pdogage, String plastWalk, String pdogowner, int pdogcolor, int pdogpic){
 
             this.dogname = pname;

@@ -104,9 +104,8 @@ public class MainActivity extends AppCompatActivity {   // implements Navigation
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-
-        Intent intent = new Intent(getApplicationContext(), NotificationsHandlerService.class);
-        getApplicationContext().startService(intent);
+        //navigationView.setNavigationItemSelectedListener(this);
+        walksReminder walksReminder = new walksReminder(getApplicationContext());
     }
 
     @Override
