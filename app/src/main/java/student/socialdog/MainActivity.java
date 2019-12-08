@@ -1,6 +1,5 @@
 package student.socialdog;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.navigation.NavController;
@@ -39,9 +38,7 @@ public class MainActivity extends AppCompatActivity {   // implements Navigation
         NavigationUI.setupWithNavController(navigationView, navController);
         //navigationView.setNavigationItemSelectedListener(this);
 
-        Intent intent = new Intent(getApplicationContext(), NotificationsHandlerService.class);
-        getApplicationContext().startService(intent);
-
+        walksReminder walksReminder = new walksReminder(getApplicationContext());
     }
 
     @Override

@@ -114,6 +114,25 @@ public class NotificationsDisplayer {
         displayNotification(applicationContext,customNotification,registered_CustomChannelID);
     }
 
+    /**
+     * Simpler (only title and content) but needs NotificationDisplayer to be instanciated.
+     * @param applicationContext The context of the application
+     * @param notificationTitle
+     * @param notificationContent
+     */
+    public void displayNotification(Context applicationContext,String notificationTitle,String notificationContent){
+        customChannel defaultChannel = null;
+        int channel_ID;
+        if(channelsList.isEmpty()){
+            defaultChannel = new customChannel("default","default channel",NotificationManager.IMPORTANCE_HIGH);
+            channel_ID = createNotificationChannel(applicationContext,defaultChannel);
+        }else{
+            defaultChannel = channelsList.get(0);
+            channel_ID = defaultChannel.mChannel_INTID;
+        }
+        displayNotification(applicationContext,notificationTitle,notificationContent,channel_ID);
+    }
+
     static private int mLastNotificationID = -1;
     public class customNotification {
         private int mNotificationID = -1;
