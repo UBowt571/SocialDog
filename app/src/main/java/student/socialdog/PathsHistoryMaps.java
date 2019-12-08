@@ -85,7 +85,6 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
     TextView dateText;
     TextView durationText;
     boolean init = true;
-    int maxId = 0;
 
     DatabaseReference pathsDB;
     DatabaseReference markersDB, markers_unapprovedDB, allMarkersDB;
@@ -318,7 +317,7 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
         }
         medLat = medLat/pathFocus.size();
         medLng = medLng/pathFocus.size();
-        goToLocation(medLat,medLng,12);
+        goToLocation(medLat,medLng,DEFAULT_ZOOM);
     }
 
 
