@@ -85,7 +85,8 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
     TextView dateText;
     TextView durationText;
     boolean init = true;
-    int maxId = 0;
+    boolean emptyHistory = false; //true if no path in history
+
 
     DatabaseReference pathsDB;
     DatabaseReference markersDB, markers_unapprovedDB, allMarkersDB;
@@ -206,7 +207,6 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             }
         });
-        //verifyMarkersUnapproved();
 
         pathsDB.addValueEventListener(new ValueEventListener() {
             @Override
@@ -217,38 +217,37 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                 allPaths.clear();
                 for(Map.Entry<String, Map> current : paths.entrySet())
                 {
-                    int i = 0;
-                    while (current.getValue().get("latitude" + i) != null)
-                    {
-                        lat = current.getValue().get("latitude" + i);
-                        lng = current.getValue().get("longitude" + i);
-                        pathList.add(new LatLng((Double)lat,(Double) lng));
-                        //Log.e(TAG,"lat " + i + " : " + Double.toString(pathList.get(i).latitude));
-                        //Log.e(TAG,"lng " + i + " : " + Double.toString(pathList.get(i).longitude));
-                        i++;
+                    if(current.getValue().get("userkey").toString().equals(MainActivity.userKey)){
+                        int i = 0;
+                        while (current.getValue().get("latitude" + i) != null)
+                        {
+                            lat = current.getValue().get("latitude" + i);
+                            lng = current.getValue().get("longitude" + i);
+                            pathList.add(new LatLng((Double)lat,(Double) lng));
+                            //Log.e(TAG,"lat " + i + " : " + Double.toString(pathList.get(i).latitude));
+                            //Log.e(TAG,"lng " + i + " : " + Double.toString(pathList.get(i).longitude));
+                            i++;
+                        }
+
+
+                        Path newPath = new Path();
+                        newPath.pathId = ((Long) current.getValue().get("id")).intValue();
+                        newPath.points = pathList;
+                        newPath.date = current.getValue().get("date").toString();
+                        newPath.duration = current.getValue().get("duration").toString();
+                        newPath.key = current.getKey();
+                        allPaths.add(newPath); //TO SORT;
+                        pathList = new ArrayList<>();
                     }
-
-
-                    Path newPath = new Path();
-                    newPath.pathId = ((Long) current.getValue().get("id")).intValue();
-                    newPath.points = pathList;
-                    newPath.date = current.getValue().get("date").toString();
-                    newPath.duration = current.getValue().get("duration").toString();
-                    newPath.key = current.getKey();
-                    allPaths.add(newPath); //TO SORT;
-                    pathList = new ArrayList<>();
                 }
+                emptyHistory = (allPaths.size() == 0);
+                Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + emptyHistory);
                 Collections.sort(allPaths);
-                if(init)
+                if(init && !emptyHistory)
                 {
                     showPathInfos(currentPathId);
                     init = false;
                 }
-                /*
-                Collections.reverse(dates);
-                Collections.reverse(durations);
-                Collections.reverse(pathKeys);
-                Collections.reverse(allPathsList);*/
             }
 
             @Override
@@ -267,36 +266,56 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
 
     void nextWalk()
     {
-        if(currentPathId < allPaths.size()-1)
+        if(!emptyHistory)
         {
-            showPathInfos(++currentPathId);
-        }
+            if(currentPathId < allPaths.size()-1)
+            {
+                showPathInfos(++currentPathId);
+            }
+        } else Toast.makeText(getContext(), "Aucune balade dans l'historique", Toast.LENGTH_SHORT).show();
+
     }
 
     void previousWalk()
     {
-        if(currentPathId > 0)
-            showPathInfos(--currentPathId);
+        if(!emptyHistory)
+        {
+            if(currentPathId > 0)
+                showPathInfos(--currentPathId);
+        } else Toast.makeText(getContext(), "Aucune balade dans l'historique", Toast.LENGTH_SHORT).show();
     }
 
     void deleteWalk()
     {
-        if(allPaths.size() >= 2)
+        if(!emptyHistory)
         {
             Toast.makeText(getContext(), "Balade supprimée", Toast.LENGTH_SHORT).show();
             removePath(currentPathId);
-            if(currentPathId == allPaths.size()-1) showPathInfos(--currentPathId);
-            else showPathInfos(++currentPathId);
-        } else Toast.makeText(getContext(), "Impossible de supprimer : nombre mininal de balades atteint.", Toast.LENGTH_SHORT).show();
+            if(allPaths.size() > 1)
+            {
+                if(currentPathId == allPaths.size()-1) showPathInfos(--currentPathId);
+                else showPathInfos(++currentPathId);
+            }
+            else
+            {
+                if (pathPolyline != null) pathPolyline.remove(); //Reset the polyline
+                if (startMarker != null) startMarker.remove();
+            }
+
+        } else Toast.makeText(getContext(), "Aucune balade dans l'historique", Toast.LENGTH_SHORT).show();
 
     }
 
     public void removePath(int cId)
     {
-        Log.e("removePath", "I REMOVED THE PATH " + cId);
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        pathsDB = database.getReference("paths");
-        pathsDB.child(allPaths.get(cId).key).setValue(null); //deletes a path in FB
+        if(!emptyHistory)
+        {
+            Log.e("removePath", "I REMOVED THE PATH " + cId);
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            pathsDB = database.getReference("paths");
+            pathsDB.child(allPaths.get(cId).key).setValue(null); //deletes a path in FB
+        }
+
     }
 
     void showPathInfos(int cId)
@@ -318,7 +337,7 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
         }
         medLat = medLat/pathFocus.size();
         medLng = medLng/pathFocus.size();
-        goToLocation(medLat,medLng,12);
+        goToLocation(medLat,medLng,DEFAULT_ZOOM);
     }
 
 
@@ -348,7 +367,11 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
 
     void drawPathId(int id)
     {
-        drawPath(allPaths.get(id).points);
+        if(!emptyHistory)
+        {
+            Log.e(TAG, "IDDDDDDDDDDDDDDDDDDDDD" + id);
+            drawPath(allPaths.get(id).points);
+        }
     }
 
     private void getLocation()
@@ -519,65 +542,4 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
         }
         return false;
     }
-
-    public void verifyMarkersUnapproved(){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        markers_unapprovedDB = database.getReference("markers_unapproved");
-        markersDB = database.getReference("markers").push();
-        markers_unapprovedDB.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String, Map> markers_unapproved =  (HashMap<String,Map>)dataSnapshot.getValue();
-                HashMap<String, Map> markers_trunc = new HashMap<>();
-                HashMap<String, Double> map = new HashMap<>();
-                // On ajoute tous les objets dans une nouvelle map, avec
-                // les coordonnées arrondies pour les comparer
-                for(Map.Entry<String, Map> current : markers_unapproved.entrySet())
-                {
-                    Object key = current.getKey();
-                    Object lati = current.getValue().get("latitude");
-                    Object longi = current.getValue().get("longitude");
-                    lati = (double)Math.round((double)lati * 100000d) / 100000d;
-                    longi = (double)Math.round((double)longi * 100000d) / 100000d;
-                    map.put("latitude",(double) lati);
-                    map.put("longitude", (double) longi);
-                    markers_trunc.put(key.toString(),map);
-                }
-                HashMap<String, Map> markers_trunc2 = markers_trunc;
-                HashMap<String, Object> result  = new HashMap<>();
-                // On compare nos coordonnées arrondies
-                for(Map.Entry<String, Map> current : markers_trunc.entrySet())
-                {
-                    for(Map.Entry<String, Map> current2 : markers_trunc2.entrySet()){
-                        if(current.getValue().get("longitude") == current2.getValue().get("longitude")
-                                && current.getValue().get("latitude") == current2.getValue().get("latitude")
-                                && current.getValue().get("type") == current2.getValue().get("type")){
-                            // Moyenne des longitudes et latitudes retenues
-                            double lati = ((double) current.getValue().get("latitude") + (double) current2.getValue().get("latitude"))/2;
-                            double longi = ((double) current.getValue().get("longitude") + (double) current2.getValue().get("longitude"))/2;
-
-                            // Ajout à la DB du nouveau marqueur
-                            result.put("latitude", lati);
-                            result.put("longitude", longi);
-                            result.put("type", current.getValue().get("type"));
-                            markersDB.setValue(result);
-
-                            // On supprime les 2 entrées dans les marqueurs non approuvés
-                            /*markers_unapprovedDB = database.getReference("markers_unapproved/"+current.getKey());
-                            markers_unapprovedDB.removeValue();
-                            markers_unapprovedDB = database.getReference("markers_unapproved/"+current2.getKey());
-                            markers_unapprovedDB.removeValue();*/
-
-                        }
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-            }
-        });
-    }
-
-
 }

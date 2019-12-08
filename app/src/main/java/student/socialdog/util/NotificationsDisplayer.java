@@ -113,7 +113,7 @@ public class NotificationsDisplayer {
 
         displayNotification(applicationContext,customNotification,registered_CustomChannelID);
     }
-
+  
     /**
      * Simpler (only title and content) but needs NotificationDisplayer to be instanciated.
      * @param applicationContext The context of the application
@@ -132,7 +132,7 @@ public class NotificationsDisplayer {
         }
         displayNotification(applicationContext,notificationTitle,notificationContent,channel_ID);
     }
-
+  
     static private int mLastNotificationID = -1;
     public class customNotification {
         private int mNotificationID = -1;

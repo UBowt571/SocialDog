@@ -406,6 +406,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             map.put("id", ++maxId);
             map.put("date", date);
             map.put("duration", duration);
+            map.put("userkey",MainActivity.userKey);
             map.put("latitude" + i, points.get(i).latitude);
             map.put("longitude" + i, points.get(i).longitude);
         }
@@ -454,10 +455,11 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                 map.put("type", type);
 
                 verifyMarkersUnapproved(currentLocation.latitude,currentLocation.longitude, type);
-                while(goForVerify==false);
+                while(!goForVerify);
                 if(verifyOK){
                     // Ajout à la DB du nouveau marqueur
                     markersDB.setValue(map);
+                    verifyOK = false;
                 }
                 else{
                     markers_unapprovedDB = database.getReference("markers_unapproved").push();
@@ -487,7 +489,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         }else{
             ActivityCompat.requestPermissions(getActivity(),
                     permissions,
-                    LOCATION_PERMISSION_REQUEST_CODE); //Lauches onRequestPermissionsResult
+                    LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
 

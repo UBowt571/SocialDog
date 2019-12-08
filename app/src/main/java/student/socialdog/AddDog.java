@@ -1,7 +1,6 @@
 package student.socialdog;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +12,8 @@ import java.util.HashMap;
 
 public class AddDog extends AppCompatActivity {
     DatabaseReference dogsDB;
+    DatabaseReference usersDB;
+    String newID="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +22,8 @@ public class AddDog extends AppCompatActivity {
 
         // Déclaration chemin Firebase
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        dogsDB = database.getReference("dogs").push();
+        dogsDB = database.getReference("dogs");
+        usersDB = database.getReference("users");
 
         Button confirmDog = findViewById(R.id.confirmDog);
 
@@ -44,14 +46,14 @@ public class AddDog extends AppCompatActivity {
         map.put("dograce", dograce.getText().toString());
         map.put("dogage", sdogage);
         map.put("lastWalk", "Non actualisé");
+        map.put("dogowner", MainActivity.userKey);
         map.put("dogcolor", "1677746432");
         map.put("dogpic", "dog2");
+        newID = "dog"+MainDogslist.alldogscount;
+        dogsDB.child(newID).setValue(map);
+        usersDB.child(MainActivity.userKey).child("dogs").child(newID).setValue("true");
 
-        dogsDB.setValue(map);
 
-        Intent dogadded = new Intent();
-        dogadded.setAction("com.example.Broadcast");
-        sendBroadcast(dogadded);
         finish();
 
     }
