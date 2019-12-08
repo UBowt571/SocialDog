@@ -206,7 +206,6 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             }
         });
-        //verifyMarkersUnapproved();
 
         pathsDB.addValueEventListener(new ValueEventListener() {
             @Override

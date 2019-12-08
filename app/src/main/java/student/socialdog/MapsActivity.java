@@ -455,7 +455,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                 map.put("type", type);
 
                 verifyMarkersUnapproved(currentLocation.latitude,currentLocation.longitude, type);
-                while(goForVerify==false);
+                while(!goForVerify);
                 if(verifyOK){
                     // Ajout à la DB du nouveau marqueur
                     markersDB.setValue(map);
@@ -488,7 +488,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         }else{
             ActivityCompat.requestPermissions(getActivity(),
                     permissions,
-                    LOCATION_PERMISSION_REQUEST_CODE); //Lauches onRequestPermissionsResult
+                    LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
 

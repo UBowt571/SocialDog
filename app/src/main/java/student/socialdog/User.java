@@ -10,8 +10,8 @@ public class User {
         public String displayedName;
         public String lastWalk;
         public String photoURL;
-        public ArrayList<String> friends = new ArrayList<>();
-        public ArrayList<String> dogs = new ArrayList<>();
+        public ArrayList<String> friends;
+        public ArrayList<String> dogs;
 
         public UserObject(String pId, String pemail, String pdisplayedName, String plastWalk, String pphotoURL,
                           ArrayList<String> pfriends, ArrayList<String> pdogs){
