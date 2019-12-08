@@ -459,6 +459,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                 if(verifyOK){
                     // Ajout à la DB du nouveau marqueur
                     markersDB.setValue(map);
+                    verifyOK = false;
                 }
                 else{
                     markers_unapprovedDB = database.getReference("markers_unapproved").push();
