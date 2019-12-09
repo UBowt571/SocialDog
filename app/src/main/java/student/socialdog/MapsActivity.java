@@ -81,12 +81,12 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     LatLng currentLocation;
     ArrayList<JSONObject> markersList;
     ArrayList<LatLng> pathList;
+    ArrayList<String> dogs;
     Polyline pathPolyline;
     Marker startMarker;
     boolean isWalking;
     final Handler walkHandler = new Handler();
     final int walkUpdateDelay = 1000; //milliseconds
-    int currentPathId = 0;
     int walkDuration = 0; //milliseconds
     int maxId = 0;
     static public ArrayList<String> selectedDogs = new ArrayList<>();
@@ -159,6 +159,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         pathList = new ArrayList<>();
+        dogs = new ArrayList<>();
         // Lecture des marqueurs depuis database FireBase
         markersDB.addValueEventListener(new ValueEventListener() {
             @Override
@@ -273,7 +274,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
             Toast.makeText(getContext(), "Balade terminée !", Toast.LENGTH_SHORT).show();
 
-            savePath(pathList, formattedDate, duration);
+            savePath(pathList, formattedDate, duration, dogs);
         }
     }
 
@@ -402,7 +403,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     }
 
     //Svae a path and its infos into firebase
-    public void savePath(ArrayList<LatLng> points, String date, String duration)
+    public void savePath(ArrayList<LatLng> points, String date, String duration, ArrayList<String> dogsList)
     {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         pathsDB = database.getReference("paths").push();
@@ -417,6 +418,11 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             map.put("userkey",MainActivity.userKey);
             map.put("latitude" + i, points.get(i).latitude);
             map.put("longitude" + i, points.get(i).longitude);
+        }
+
+        for(int i = 0; i<dogsList.size(); i++)
+        {
+            map.put("dogs" + i, dogsList.get(i));
         }
 
         pathsDB.setValue(map);
