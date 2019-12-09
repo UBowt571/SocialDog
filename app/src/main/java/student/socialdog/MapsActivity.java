@@ -85,10 +85,12 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     Marker startMarker;
     boolean isWalking;
     final Handler walkHandler = new Handler();
+    final Handler markerHandler = new Handler();
     final int walkUpdateDelay = 1000; //milliseconds
     int walkDuration = 0; //milliseconds
     int maxId = 0;
     static public ArrayList<String> selectedDogs = new ArrayList<>();
+    HashMap<String, Object> mapMarker = new HashMap<>();
 
     DatabaseReference pathsDB;
     DatabaseReference markersDB, markers_unapprovedDB;
@@ -219,10 +221,30 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         if(mLocationPermissionsGranted){
             getLocation();
             goToLocation(currentLocation.latitude, currentLocation.longitude);
-            Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAAA");
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setCompassEnabled(true);
         }
+
+        markerHandler.postDelayed(new Runnable(){
+            public void run(){
+                if(goForVerify)
+                {
+                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    if(verifyOK){
+                        // Ajout à la DB du nouveau marqueur
+                        markersDB.setValue(mapMarker);
+                        verifyOK = false;
+                    }
+                    else{
+                        markers_unapprovedDB = database.getReference("markers_unapproved").push();
+                        markers_unapprovedDB.setValue(mapMarker);
+                    }
+                    goForVerify = false;
+                }
+
+                markerHandler.postDelayed(this, walkUpdateDelay);
+            }
+        }, walkUpdateDelay);
     }
 
     @Override
@@ -457,35 +479,22 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Bitmap markerIcon;
-                String type="";
+                mapMarker = new HashMap<>();
+                String type;
                 switch(which){
                     case(0):
                     default:
-                        markerIcon = treeIcon;
                         type = "tree";
                         break;
                     case(1):
-                        markerIcon = bagIcon;
                         type = "bag";
                         break;
                 }
-                HashMap<String, Object> map = new HashMap<>();
-                map.put("latitude", currentLocation.latitude);
-                map.put("longitude", currentLocation.longitude);
-                map.put("type", type);
+                mapMarker.put("latitude", currentLocation.latitude);
+                mapMarker.put("longitude", currentLocation.longitude);
+                mapMarker.put("type", type);
 
                 verifyMarkersUnapproved(currentLocation.latitude,currentLocation.longitude, type);
-                while(!goForVerify);
-                if(verifyOK){
-                    // Ajout à la DB du nouveau marqueur
-                    markersDB.setValue(map);
-                    verifyOK = false;
-                }
-                else{
-                    markers_unapprovedDB = database.getReference("markers_unapproved").push();
-                    markers_unapprovedDB.setValue(map);
-                }
             }
 
         });
@@ -591,6 +600,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                     lati = (double)Math.round((double)lati * 100000d) / 100000d;
                     double longi = Double.parseDouble(slongi);
                     longi = (double)Math.round((double)longi * 100000d) / 100000d;
+                    Log.e(TAG, "lati : " + lati);
+                    Log.e(TAG, "curlati : " + curLati);
+                    Log.e(TAG, "longi : " + longi);
+                    Log.e(TAG, "curlongi : " + curLongi);
                     map.put("latitude",(double) lati);
                     map.put("longitude", (double) longi);
                     markers_trunc.put(key.toString(),map);
@@ -598,18 +611,21 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                 // On compare nos coordonnées arrondies
                 for(Map.Entry<String, Map> current : markers_trunc.entrySet())
                 {
-                    if((double)current.getValue().get("longitude") == curLongi
-                    && (double)current.getValue().get("latitude") == curLati){
+                    Double lat = Double.parseDouble(current.getValue().get("latitude").toString());
+                    Double lng = Double.parseDouble(current.getValue().get("longitude").toString());
+                    if(lng == curLongi
+                    && lat == curLati){
                         verifyOK = true;
                     }
                 }
+                goForVerify = true;
+
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             }
         });
-        goForVerify = true;
     }
 
 
