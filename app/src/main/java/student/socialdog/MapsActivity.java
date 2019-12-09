@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -88,6 +89,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     final int walkUpdateDelay = 1000; //milliseconds
     int walkDuration = 0; //milliseconds
     int maxId = 0;
+    static public ArrayList<String> selectedDogs = new ArrayList<>();
 
     DatabaseReference pathsDB;
     DatabaseReference markersDB, markers_unapprovedDB;
@@ -129,7 +131,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         startWalkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startWalk();
+                Intent intent = new Intent(getContext(), DogSelection.class);
+                startActivityForResult(intent,0);
             }
         });
 
@@ -144,6 +147,14 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         markersList = assetLoader.getJSONArray(list_markers, "markers");
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == 0){
+            startWalk();
+        }
     }
 
 
