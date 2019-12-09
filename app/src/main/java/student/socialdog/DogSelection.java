@@ -36,6 +36,7 @@ public class DogSelection extends AppCompatActivity {
         validateBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                myDogsSelectionList = new ArrayList<>();
                 finish();
             }
         });
