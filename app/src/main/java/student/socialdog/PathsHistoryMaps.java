@@ -159,10 +159,6 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                 deleteWalk();
             }
         });
-
-        JSONObject list_markers = assetLoader.JSON(getContext(),"markers.json");
-        markersList = assetLoader.getJSONArray(list_markers, "markers");
-
         return rootView;
     }
 
