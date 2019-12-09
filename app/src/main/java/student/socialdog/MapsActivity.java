@@ -260,7 +260,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             Date c = Calendar.getInstance().getTime();
             System.out.println("Current time => " + c);
 
-            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+            SimpleDateFormat df = new SimpleDateFormat("yyyy.MM.dd");
             String formattedDate = df.format(c);
 
             Toast.makeText(getContext(), "Balade terminée !", Toast.LENGTH_SHORT).show();
