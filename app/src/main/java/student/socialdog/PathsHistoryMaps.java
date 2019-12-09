@@ -84,6 +84,7 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
     int currentPathId = 0;
     TextView dateText;
     TextView durationText;
+    TextView dogsText;
     boolean init = true;
     boolean emptyHistory = false; //true if no path in history
 
@@ -99,6 +100,7 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
         String date;
         String duration;
         ArrayList<LatLng> points;
+        ArrayList<String> dogs;
 
         @Override
         public int compareTo(Path p)
@@ -130,6 +132,7 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
         Button deleteWalkButton = rootView.findViewById(R.id.deleteWalk);
         dateText = rootView.findViewById(R.id.dateText);
         durationText = rootView.findViewById(R.id.durationText);
+        dogsText = rootView.findViewById(R.id.dogsTest);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         markersDB = database.getReference("markers");
@@ -219,6 +222,7 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                 {
                     if(current.getValue().get("userkey").toString().equals(MainActivity.userKey)){
                         int i = 0;
+                        int j = 0;
                         while (current.getValue().get("latitude" + i) != null)
                         {
                             lat = current.getValue().get("latitude" + i);
@@ -236,12 +240,19 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
                         newPath.date = current.getValue().get("date").toString();
                         newPath.duration = current.getValue().get("duration").toString();
                         newPath.key = current.getKey();
+                        newPath.dogs = new ArrayList<>();
+
+                        while (current.getValue().get("dog" + j) != null)
+                        {
+                            newPath.dogs.add(current.getValue().get("dog" + j).toString());
+                            j++;
+                        }
+
                         allPaths.add(newPath); //TO SORT;
                         pathList = new ArrayList<>();
                     }
                 }
                 emptyHistory = (allPaths.size() == 0);
-                Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + emptyHistory);
                 Collections.sort(allPaths);
                 if(init && !emptyHistory)
                 {
@@ -321,8 +332,22 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
     void showPathInfos(int cId)
     {
         drawPathId(cId);
-        dateText.setText("date : " + allPaths.get(cId).date);
-        durationText.setText("duration : " + allPaths.get(cId).duration);
+        dateText.setText("Date : " + allPaths.get(cId).date);
+        durationText.setText("Durée : " + allPaths.get(cId).duration);
+        if(allPaths.get(cId).dogs.size() > 1)
+        {
+            String allDogs = "Chiens : ";
+            for(String dog : allPaths.get(cId).dogs)
+            {
+                allDogs += dog + " ";
+            }
+            dogsText.setText(allDogs);
+        } else
+        {
+            if (allPaths.get(cId).dogs.size() == 0)  dogsText.setText("");
+            else dogsText.setText("Chien : " + allPaths.get(cId).dogs.get(0));
+        }
+
     }
 
     //Move Camera to the center of a walk
