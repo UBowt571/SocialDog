@@ -49,7 +49,7 @@ public class MainDogslist extends Fragment {
                 usersList = assetLoader.getUsers(getContext(),usersInDB);
 
                 // Récupération des chiens dans la database FireBase
-                ArrayList<DogAdapter.DogObject> alldogs = assetLoader.getAllDogs(getActivity().getApplicationContext(),dogsInDB);
+                ArrayList<DogAdapter.DogObject> alldogs = assetLoader.getAllDogs(getContext(),dogsInDB);
                 alldogscount = alldogs.size();
                 dogslist = assetLoader.getMyDogs(getActivity().getApplicationContext(),dogsInDB);
 

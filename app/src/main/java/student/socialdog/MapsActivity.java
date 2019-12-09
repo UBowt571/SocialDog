@@ -195,7 +195,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             }
         });
-        //verifyMarkersUnapproved();
 
         pathsDB.addValueEventListener(new ValueEventListener() {
             @Override
@@ -588,9 +587,11 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
                 for(Map.Entry<String, Map> current : markers_unapproved.entrySet())
                 {
                     Object key = current.getKey();
-                    Object lati = current.getValue().get("latitude");
-                    Object longi = current.getValue().get("longitude");
+                    String slati = current.getValue().get("latitude").toString();
+                    String slongi = current.getValue().get("longitude").toString();
+                    double lati = Double.parseDouble(slati);
                     lati = (double)Math.round((double)lati * 100000d) / 100000d;
+                    double longi = Double.parseDouble(slongi);
                     longi = (double)Math.round((double)longi * 100000d) / 100000d;
                     map.put("latitude",(double) lati);
                     map.put("longitude", (double) longi);
