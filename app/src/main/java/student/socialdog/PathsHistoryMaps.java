@@ -311,6 +311,9 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
             {
                 if (pathPolyline != null) pathPolyline.remove(); //Reset the polyline
                 if (startMarker != null) startMarker.remove();
+                dogsText.setText("");
+                dateText.setText("");
+                durationText.setText("");
             }
 
         } else Toast.makeText(getContext(), "Aucune balade dans l'historique", Toast.LENGTH_SHORT).show();

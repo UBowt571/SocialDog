@@ -427,12 +427,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             map.put("longitude" + i, points.get(i).longitude);
         }
 
-        Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + dogsList.get(0));
 
         for(int i = 0; i<dogsList.size(); i++)
         {
             map.put("dog" + i, dogsList.get(i));
-            Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + dogsList.get(i));
         }
 
         pathsDB.setValue(map);
