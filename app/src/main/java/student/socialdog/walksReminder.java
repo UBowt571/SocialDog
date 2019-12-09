@@ -23,11 +23,13 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
 public class walksReminder {
     DatabaseReference walksDB;
     public Date lastWalkDate;
+    public Date defaultDate;
     SimpleDateFormat sDF = new SimpleDateFormat("yyyy.MM.dd");
 
     public walksReminder(final Context applicationContext){
         try {
-            lastWalkDate = sDF.parse("0000.00.00");
+            defaultDate = sDF.parse("0000.00.00");
+            lastWalkDate = defaultDate;
         }catch (Exception ex){
             ex.printStackTrace();
         }
@@ -46,25 +48,28 @@ public class walksReminder {
 
                 for(Map.Entry<String, Map> current : walksInDB.entrySet()) {
                     try{
-                        Object date = current.getValue().get("date");
-                        Date currentWalkDate = sDF.parse((String)date);
-                        if (currentWalkDate != null && currentWalkDate.after(lastWalkDate)) {
-                            lastWalkDate = currentWalkDate;
+                        String walkOwner = (String)current.getValue().get("userkey");
+                        if(walkOwner.equals(MainActivity.userKey)){
+                            Object date = current.getValue().get("date");
+                            Date currentWalkDate = sDF.parse((String)date);
+                            if (currentWalkDate != null && currentWalkDate.after(lastWalkDate)) {
+                                lastWalkDate = currentWalkDate;
+                            }
                         }
-                        int var = 50;
                     } catch(Exception ex){
                         ex.printStackTrace();
                     }
                 }
                 //Get date
                 Date now = Calendar.getInstance().getTime();
-                long diff = now.getTime() - lastWalkDate.getTime();
-                long num_days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-                if(num_days > 3){
-                    NotificationsDisplayer notificationsDisplayer = new NotificationsDisplayer();
-                    notificationsDisplayer.displayNotification(applicationContext,"Rappel de promenade","Hey, ça fait "+num_days+" jours que tu n'as pas fait de promenade !");
+                if(!lastWalkDate.equals(defaultDate)){
+                    long diff = now.getTime() - lastWalkDate.getTime();
+                    long num_days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+                    if(num_days > 3){
+                        NotificationsDisplayer notificationsDisplayer = new NotificationsDisplayer();
+                        notificationsDisplayer.displayNotification(applicationContext,"Rappel de promenade","Hey, ça fait "+num_days+" jours que tu n'as pas fait de promenade !");
+                    }
                 }
-                int var = 50;
             }
 
             @Override
@@ -73,8 +78,4 @@ public class walksReminder {
             }
         });
     }
-
-
-
-
 }
