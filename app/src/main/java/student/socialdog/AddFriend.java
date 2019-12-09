@@ -22,7 +22,7 @@ import java.util.Map;
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class AddFriend extends AppCompatActivity {
-    DatabaseReference usersDB;
+    DatabaseReference usersDB, usersDB2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +32,7 @@ public class AddFriend extends AppCompatActivity {
         // Déclaration chemin Firebase
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         usersDB = database.getReference("users");
+        usersDB2 = database.getReference("users").push();
 
 
         Button confirmFriend = findViewById(R.id.confirmFriend);
@@ -72,15 +73,16 @@ public class AddFriend extends AppCompatActivity {
                         userExists = true;
                         friendID = usersList.get(i).id;
                     }
-                    if(userExists){
-                        HashMap<String,String> map = new HashMap<>();
-                        map.put(friendID,"true");
-                        usersDB.child(MainActivity.userKey).child("friends").setValue(map);
-                        finish();
-                    }
-                    else {
-                        Toast.makeText(getApplicationContext(),"Utilisateur introuvable, peut-être qu'il n'utilise pas encore Social Dog ?",Toast.LENGTH_SHORT).show();
-                    }
+
+                }
+                if(userExists){
+                    HashMap<String,String> map = new HashMap<>();
+                    map.put(friendID,"true");
+                    usersDB.child(MainActivity.userKey).child("friends").child(friendID).setValue("true");
+                    finish();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(),"Utilisateur introuvable, peut-être qu'il n'utilise pas encore Social Dog ?",Toast.LENGTH_SHORT).show();
                 }
 
             }
