@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -129,7 +130,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         startWalkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startWalk();
+                Intent intent = new Intent(getContext(), DogSelection.class);
+                startActivity(intent);
             }
         });
 
