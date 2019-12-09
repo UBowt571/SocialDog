@@ -46,7 +46,7 @@ public class MainDogslist extends Fragment {
                 HashMap<String,Map> usersInDB = allInDB.get("users");
                 HashMap<String,Map> dogsInDB = allInDB.get("dogs");
                 ArrayList<User.UserObject> usersList = new ArrayList<>();
-                usersList = assetLoader.getUsers(getActivity().getApplicationContext(),usersInDB);
+                usersList = assetLoader.getUsers(getContext(),usersInDB);
 
                 // Récupération des chiens dans la database FireBase
                 ArrayList<DogAdapter.DogObject> alldogs = assetLoader.getAllDogs(getActivity().getApplicationContext(),dogsInDB);
