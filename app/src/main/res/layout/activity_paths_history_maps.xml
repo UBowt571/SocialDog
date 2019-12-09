@@ -63,7 +63,7 @@ android:gravity="center">
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:gravity="top"
-                android:text="date : "
+                android:text="Date : "
                 ></TextView>
             <TextView
                 android:id="@+id/durationText"
@@ -74,7 +74,17 @@ android:gravity="center">
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:gravity="bottom"
-                android:text="duration : "></TextView>
+                android:text="Durée : "></TextView>
+            <TextView
+                android:id="@+id/dogsTest"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:keepScreenOn="true"
+                android:textColor="#2f4b66"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:gravity="bottom"
+                android:text="Chien(s) : "></TextView>
 
         </LinearLayout>
 
