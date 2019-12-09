@@ -89,6 +89,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     int currentPathId = 0;
     int walkDuration = 0; //milliseconds
     int maxId = 0;
+    static public ArrayList<String> selectedDogs = new ArrayList<>();
 
     DatabaseReference pathsDB;
     DatabaseReference markersDB, markers_unapprovedDB;
@@ -131,7 +132,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), DogSelection.class);
-                startActivity(intent);
+                startActivityForResult(intent,0);
             }
         });
 
@@ -146,6 +147,14 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         markersList = assetLoader.getJSONArray(list_markers, "markers");
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == 0){
+            startWalk();
+        }
     }
 
 
