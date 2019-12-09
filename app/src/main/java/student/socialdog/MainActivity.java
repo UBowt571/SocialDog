@@ -1,6 +1,7 @@
 package student.socialdog;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -32,10 +33,70 @@ public class MainActivity extends AppCompatActivity {   // implements Navigation
     private AppBarConfiguration mAppBarConfiguration;
     DatabaseReference usersDB;
     static String userKey;
+    public String userDisplayedName;
+    public String userEmail;
+    public String userPhotoURL;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
+        /* Check for walk reminder */
+        abstract class myRunnable implements Runnable{
+            MainActivity mActivity;
+            public myRunnable(MainActivity activity){
+                mActivity = activity;
+            }
+        }
+        new Thread(new myRunnable(this){
+            public void run(){
+                // On insère l'utilisateur dans la base de données si il n'est pas présent
+                final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                usersDB = database.getReference("users");
+                usersDB.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        // Récupération des utilisateurs dans la database FireBase
+                        HashMap<String, Map> usersInDB = (HashMap<String,Map>) dataSnapshot.getValue();
+                        ArrayList<User.UserObject> usersList = new ArrayList<>();
+                        usersList = assetLoader.getUsers(getApplicationContext(),usersInDB);
+                        boolean userExists = false;
+
+                        for(int i=0;i<usersList.size();i++){
+                            String thisKey = usersList.get(i).id;
+                            if(userKey.equals(thisKey)){
+                                userExists = true;
+                            }
+                        }
+                        if(!userExists){
+                            HashMap<String,Object> map = new HashMap<>();
+                            map.put("displayedName",userDisplayedName);
+                            map.put("email",userEmail);
+                            map.put("lastWalk","");
+                            map.put("photoURL",userPhotoURL);
+                            usersDB.child(userKey).setValue(map);
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                    }
+                });
+            }
+        }).start();
+
+
+
+        /* Check for walk reminder */
+        new Thread(new Runnable() {
+            public void run() {
+                walksReminder walksReminder = new walksReminder(getApplicationContext());
+            }
+        }).start();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -58,40 +119,7 @@ public class MainActivity extends AppCompatActivity {   // implements Navigation
         String imgurl = userPhotoURL;
         Glide.with(this).load(imgurl).into(imgv);
 
-        // On insère l'utilisateur dans la base de données si il n'est pas présent
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        usersDB = database.getReference("users");
-        usersDB.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // Récupération des utilisateurs dans la database FireBase
-                HashMap<String, Map> usersInDB = (HashMap<String,Map>) dataSnapshot.getValue();
-                ArrayList<User.UserObject> usersList = new ArrayList<>();
-                usersList = assetLoader.getUsers(getApplicationContext(),usersInDB);
-                boolean userExists = false;
 
-               for(int i=0;i<usersList.size();i++){
-                   String thisKey = usersList.get(i).id;
-                   if(userKey.equals(thisKey)){
-                       userExists = true;
-                   }
-               }
-               if(!userExists){
-                   HashMap<String,Object> map = new HashMap<>();
-                   map.put("displayedName",userDisplayedName);
-                   map.put("email",userEmail);
-                   map.put("lastWalk","");
-                   map.put("photoURL",userPhotoURL);
-                   usersDB.child(userKey).setValue(map);
-               }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-            }
-        });
 
 
         // Passing each menu ID as a set of Ids because each
@@ -105,7 +133,6 @@ public class MainActivity extends AppCompatActivity {   // implements Navigation
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
         //navigationView.setNavigationItemSelectedListener(this);
-        walksReminder walksReminder = new walksReminder(getApplicationContext());
     }
 
     @Override
