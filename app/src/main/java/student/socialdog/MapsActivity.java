@@ -281,6 +281,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             savePath(pathList, formattedDate, duration, selectedDogs);
             if (pathPolyline != null) pathPolyline.remove(); //Reset the polyline
             if (startMarker != null) startMarker.remove();
+            selectedDogs = new ArrayList<>();
         }
     }
 
