@@ -329,6 +329,8 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
 
     }
 
+
+
     void showPathInfos(int cId)
     {
         drawPathId(cId);
@@ -394,7 +396,6 @@ public class PathsHistoryMaps extends Fragment implements OnMapReadyCallback, Lo
     {
         if(!emptyHistory)
         {
-            Log.e(TAG, "IDDDDDDDDDDDDDDDDDDDDD" + id);
             drawPath(allPaths.get(id).points);
         }
     }

@@ -81,7 +81,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     LatLng currentLocation;
     ArrayList<JSONObject> markersList;
     ArrayList<LatLng> pathList;
-    ArrayList<String> dogs;
     Polyline pathPolyline;
     Marker startMarker;
     boolean isWalking;
@@ -159,7 +158,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         pathList = new ArrayList<>();
-        dogs = new ArrayList<>();
         // Lecture des marqueurs depuis database FireBase
         markersDB.addValueEventListener(new ValueEventListener() {
             @Override
@@ -228,6 +226,12 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
         }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(isWalking) endWalk();
+    }
+
     void startWalk()
     {
         if (!isWalking)
@@ -274,7 +278,9 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
 
             Toast.makeText(getContext(), "Balade terminée !", Toast.LENGTH_SHORT).show();
 
-            savePath(pathList, formattedDate, duration, dogs);
+            savePath(pathList, formattedDate, duration, selectedDogs);
+            if (pathPolyline != null) pathPolyline.remove(); //Reset the polyline
+            if (startMarker != null) startMarker.remove();
         }
     }
 
@@ -420,9 +426,12 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Locati
             map.put("longitude" + i, points.get(i).longitude);
         }
 
+        Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + dogsList.get(0));
+
         for(int i = 0; i<dogsList.size(); i++)
         {
-            map.put("dogs" + i, dogsList.get(i));
+            map.put("dog" + i, dogsList.get(i));
+            Log.e(TAG, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + dogsList.get(i));
         }
 
         pathsDB.setValue(map);
